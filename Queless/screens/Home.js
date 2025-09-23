@@ -1,40 +1,38 @@
-// screens/Home.js
+// src/screens/Home.js
 import * as React from 'react';
-import { Text, ScrollView, Image } from 'react-native';
+import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { colors } from '../style/theme';
 
-// Skærme (ligger i samme mappe)
+// Skærme
 import CheckIn from './CheckIn';
 import Favorites from './Favorites';
 import Friends from './Friends';
 import MyOutlets from './MyOutlets';
 
-// Ikoner (ligger i ../assets/icons/)
+// Indhold til Hjem
+import HomeContent from '../components/HomeComponent';
+
+// Ikoner
 import HomeIcon from '../assets/icons/Home.png';
 import HeartIcon from '../assets/icons/heart.png';
 import FriendsIcon from '../assets/icons/friends.png';
 import CalendarIcon from '../assets/icons/calendar.png';
 import QRIcon from '../assets/icons/QRcode.png';
 
-function HomeScreen() {
-  return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <Text style={{ fontSize: 24, marginBottom: 16 }}>Hjemmeskærm</Text>
-      <Text style={{ textAlign: 'center' }}>Brug fanerne i bunden for at navigere.</Text>
-    </ScrollView>
-  );
-}
-
 const Tab = createBottomTabNavigator();
 
-// Map rutenavne -> ikonfil
 const TAB_ICONS = {
   Hjem: HomeIcon,
   Favorites: HeartIcon,
-  CheckIn: QRIcon,       // vælg QR eller Calendar til den fane du vil
+  CheckIn: QRIcon,
   Friends: FriendsIcon,
   MyOutlets: CalendarIcon,
 };
+
+function HomeScreen() {
+  return <HomeContent />;
+}
 
 export default function Home() {
   return (
@@ -43,14 +41,10 @@ export default function Home() {
       screenOptions={({ route }) => ({
         headerTitleAlign: 'center',
         tabBarIcon: ({ color, size }) => (
-          <Image
-            source={TAB_ICONS[route.name]}
-            style={{ width: size, height: size, tintColor: color }}
-            resizeMode="contain"
-          />
+          <Image source={TAB_ICONS[route.name]} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />
         ),
-        tabBarActiveTintColor: '#0a7',
-        tabBarInactiveTintColor: '#777',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
       })}
     >
       <Tab.Screen name="Hjem" component={HomeScreen} options={{ title: 'Hjem' }} />
