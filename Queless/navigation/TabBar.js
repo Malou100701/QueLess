@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colors, headerStyling } from '../style/theme';
 
 // Skærme
-import HomeScreen from '../screens/HomeScreen';
+import Home from '../screens/Home';            
 import CheckIn from '../screens/CheckIn';
 import Favorites from '../screens/Favorites';
 import Friends from '../screens/Friends';
@@ -33,17 +33,12 @@ export default function NavigationBar() {
     <Tab.Navigator
       initialRouteName="Hjem"
       screenOptions={({ route }) => ({
-        // HEADER – fjern border/hairline
-        headerTitleAlign: headerStyling.headerTitleAlign,
-        headerShadowVisible: headerStyling.headerShadowVisible,
-        headerStyle: { ...headerStyling.headerStyle },
-
-        // TAB BAR
-        tabBarStyle: { ...headerStyling.tabBarStyle },
-        tabBarActiveTintColor: headerStyling.tabBarActiveTintColor,
-        tabBarInactiveTintColor: headerStyling.tabBarInactiveTintColor,
-
-        // Ikon-render
+        headerStyle: { backgroundColor: colors.background  },
+        headerShadowVisible: false,
+        headerTitleAlign: 'center',
+        tabBarStyle: { backgroundColor: colors.surface },
+        tabBarActiveTintColor: colors.tabActive,       
+        tabBarInactiveTintColor: colors.tabInactive,   
         tabBarIcon: ({ color, size }) => (
           <Image
             source={TAB_ICONS[route.name]}
@@ -53,7 +48,7 @@ export default function NavigationBar() {
         ),
       })}
     >
-      <Tab.Screen name="Hjem" component={HomeScreen} options={{ title: 'Hjem' }} />
+      <Tab.Screen name="Hjem" component={Home} options={{ title: 'Hjem' }} />
       <Tab.Screen name="Favorites" component={Favorites} options={{ title: 'Favoritter' }} />
       <Tab.Screen name="CheckIn" component={CheckIn} options={{ title: 'Tjek ind' }} />
       <Tab.Screen name="Friends" component={Friends} options={{ title: 'Venner' }} />
