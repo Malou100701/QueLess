@@ -1,4 +1,6 @@
+// Josephine Holst-Christensen
 import { StyleSheet } from 'react-native';
+import { colors } from './theme';
 
 export default StyleSheet.create({
   container: {
@@ -6,6 +8,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
+    backgroundColor: colors.background, // ← tilføjet
   },
   listWrapper: {
     width: '70%',

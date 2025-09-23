@@ -1,4 +1,4 @@
-//Josephine Holst-Christensen
+// Malou Bjørnholt
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 import styles from '../style/home.styles'; 
