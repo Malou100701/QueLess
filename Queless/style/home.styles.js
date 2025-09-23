@@ -1,3 +1,4 @@
+// Josephine Holst-Christensen
 import { StyleSheet } from 'react-native';
 import { spacing, colors } from './theme';
 

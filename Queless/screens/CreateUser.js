@@ -1,3 +1,4 @@
+// Josephine Holst-Christensen + Malou Bjørnholt (Bruges ikke endnu)
 import * as React from 'react';
 import { View, Text } from 'react-native';
 

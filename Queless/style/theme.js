@@ -1,3 +1,4 @@
+//Josephine Holst-Christensen + Malou Bjørnholt
 export const colors = {
     brand: '#2E7CF6', // Primær brand/accent-farve (knapper, links, highlights)
     tabActive: '#65B68D',   // Farven på ikon/label i bundmenu når fanen er aktiv 
