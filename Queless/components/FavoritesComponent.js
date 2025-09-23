@@ -1,3 +1,4 @@
+// Josephine Holst-Christensen
 import * as React from 'react';
 import { ScrollView, View, Text, FlatList } from 'react-native';
 import styles from '../style/favorite.styles';

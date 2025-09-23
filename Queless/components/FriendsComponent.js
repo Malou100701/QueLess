@@ -1,16 +1,21 @@
 // Malou Bjørnholt
 import * as React from 'react';
-import { ScrollView, Text } from 'react-native';
-import styles from '../style/home.styles'; 
+import { ScrollView, View, Text, FlatList } from 'react-native';
+import styles from '../style/friends.styles';
+import {FRIENDS} from '../data/Friends';
 
 export default function FriendsContent() {
   return (
-    <ScrollView
-      style={styles.page}                  
-      contentContainerStyle={styles.container}
-    >
-      <Text style={styles.title}>Venner</Text>
-      <Text style={styles.body}>Brug fanerne i bunden for at navigere.</Text>
-    </ScrollView>
+   <View style={styles.container}>
+         <View style={styles.listWrapper}>
+           <FlatList
+             data={FRIENDS}
+             keyExtractor={(item, i) => `${item}-${i}`}
+             renderItem={({ item }) => <Text style={styles.itemText}>{item}</Text>}
+             ItemSeparatorComponent={() => <View style={styles.separator} />}
+             showsVerticalScrollIndicator={false}
+           />
+         </View>
+       </View>
   );
 }
