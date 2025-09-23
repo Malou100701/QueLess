@@ -8,7 +8,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    backgroundColor: colors.background, // ← tilføjet
+    backgroundColor: colors.background, 
   },
   listWrapper: {
     width: '70%',
