@@ -8,8 +8,8 @@ import CheckIn from '../Queless/screens/CheckIn.js';
 import Favorites from '../Queless/screens/Favorites.js';
 import Friends from '../Queless/screens/Friends.js';
 import MyOutlets from '../Queless/screens/MyOutlets.js';
-import CreateUser from '../Queless/screens/CreateUser.js'; // hvis du vil tilføje den senere
-import Login from '../Queless/screens/Login.js';           // hvis du vil tilføje den senere
+//import CreateUser from '../Queless/screens/CreateUser.js'; // hvis du vil tilføje den senere
+//import Login from '../Queless/screens/Login.js';           // hvis du vil tilføje den senere
 
 // Ikoner (tilpas stierne hvis din App.js ligger et andet sted)
 import HomeIcon from '../Queless/assets/icons/Home.png';
@@ -33,7 +33,7 @@ const Tab = createBottomTabNavigator();
 const TAB_ICONS = {
   Hjem: HomeIcon,
   Favorites: HeartIcon,
-  CheckIn: QRIcon,       // eller CalendarIcon, hvis du foretrækker
+  CheckIn: QRIcon,      
   Friends: FriendsIcon,
   MyOutlets: CalendarIcon,
 };
@@ -60,7 +60,7 @@ export default function App() {
         <Tab.Screen name="Favorites" component={Favorites} options={{ title: 'Favoritter' }} />
         <Tab.Screen name="CheckIn" component={CheckIn} options={{ title: 'Tjek ind' }} />
         <Tab.Screen name="Friends" component={Friends} options={{ title: 'Venner' }} />
-        <Tab.Screen name="MyOutlets" component={MyOutlets} options={{ title: 'Mine lagersalg' }} />
+        <Tab.Screen name="MyOutlets" component={MyOutlets} options={{ title: 'Mine tider' }} />
       </Tab.Navigator>
     </NavigationContainer>
   );
