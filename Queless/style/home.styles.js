@@ -1,11 +1,10 @@
-// src/styles/home.styles.js
 import { StyleSheet } from 'react-native';
 import { spacing, colors } from './theme';
 
 export default StyleSheet.create({
-  page: {              
+  page: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background, // lyseblå, næsten hvid
   },
   container: {
     flexGrow: 1,

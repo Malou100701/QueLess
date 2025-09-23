@@ -1,10 +1,6 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import MyOutletsContent from '../components/MyOutletsComponents';
 
 export default function MyOutlets() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Mine lagersalg</Text>
-    </View>
-  );
+  return <MyOutletsContent/>;
 }

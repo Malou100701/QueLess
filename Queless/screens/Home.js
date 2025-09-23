@@ -1,19 +1,14 @@
-// src/screens/Home.js
 import * as React from 'react';
 import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colors } from '../style/theme';
+import { colors } from '../style/theme'; 
 
-// Skærme
 import CheckIn from './CheckIn';
 import Favorites from './Favorites';
 import Friends from './Friends';
 import MyOutlets from './MyOutlets';
-
-// Indhold til Hjem
 import HomeContent from '../components/HomeComponent';
 
-// Ikoner
 import HomeIcon from '../assets/icons/Home.png';
 import HeartIcon from '../assets/icons/heart.png';
 import FriendsIcon from '../assets/icons/friends.png';
@@ -39,12 +34,19 @@ export default function Home() {
     <Tab.Navigator
       initialRouteName="Hjem"
       screenOptions={({ route }) => ({
+        headerStyle: { backgroundColor: colors.background  },
+        headerShadowVisible: false,
         headerTitleAlign: 'center',
+        tabBarStyle: { backgroundColor: colors.surface },
+        tabBarActiveTintColor: colors.tabActive,       
+        tabBarInactiveTintColor: colors.tabInactive,   
         tabBarIcon: ({ color, size }) => (
-          <Image source={TAB_ICONS[route.name]} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" />
+          <Image
+            source={TAB_ICONS[route.name]}
+            style={{ width: size, height: size, tintColor: color }}
+            resizeMode="contain"
+          />
         ),
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.muted,
       })}
     >
       <Tab.Screen name="Hjem" component={HomeScreen} options={{ title: 'Hjem' }} />
