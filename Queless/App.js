@@ -11,52 +11,20 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Login from './screens/Login';
 
 // Din tab-navigator ligger nu her:
 import Home from './screens/Home';
 
 const Stack = createNativeStackNavigator();
 
-function LoginScreen({ navigation }) {
-  const [name, setName] = React.useState('');
-
-  const goHome = () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    // send navnet med som param, hvis du vil bruge det i Home senere
-    navigation.replace('Home', { name: trimmed });
-  };
-
-  return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <Text style={styles.title}>Log ind</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Dit navn"
-        value={name}
-        onChangeText={setName}
-        autoCapitalize="words"
-        autoCorrect={false}
-        returnKeyType="done"
-        onSubmitEditing={goHome}
-      />
-
-      <Button title="Fortsæt" onPress={goHome} disabled={!name.trim()} />
-    </KeyboardAvoidingView>
-  );
-}
-
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"
-          component={LoginScreen}
+          component={Login}
           options={{ title: 'Log ind' }}
         />
         {/* Home er din bundmenu fra screens/Home.js */}
