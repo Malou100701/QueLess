@@ -1,9 +1,7 @@
 # QueLess
 **Queless**
 
-Queless er en app, der skal revolutionere oplevelsen af lagersalg. 
-
-Traditionelt er lagersalg forbundet med lange køer, kaotiske forhold og risikoen for at gå glip af de bedste varer. Queless løser dette ved at give kunder mulighed for at booke adgang i tidsbestemte slots.
+Queless er en app, der skal revolutionere oplevelsen af lagersalg. Traditionelt er lagersalg forbundet med lange køer, kaotiske forhold og risikoen for at gå glip af de bedste varer. Queless løser dette ved at give kunder mulighed for at booke adgang i tidsbestemte slots.
 
 
 **Formål**
