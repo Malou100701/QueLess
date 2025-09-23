@@ -29,3 +29,7 @@ Med Queless vil vi skabe en ny standard for lagersalg – en oplevelse præget a
 
 **OBS**
 Vær opmærksom på, at da vi arbejder på projektet som gruppe, har vi valgt at lave på det samme projekt, og det fremgår derfor øverst på hver side, hvem der har haft ansvaret for hver enkelt delelement!
+
+**Link til LOOM Video**
+
+
