@@ -5,9 +5,9 @@ export default function Login({ navigation }) {
   const [name, setName] = React.useState('');
 
   const goHome = () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    navigation.replace('Home', { name: trimmed });
+    const navn = name.trim();
+    if (!navn) return;
+    navigation.replace('Home', { name: navn });
   };
 
   return (
