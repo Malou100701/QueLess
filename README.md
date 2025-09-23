@@ -26,3 +26,6 @@ Dataindsamling for virksomheder til optimering af events.
 
 Med Queless vil vi skabe en ny standard for lagersalg – en oplevelse præget af overblik, effektivitet og tilfredse kunder i stedet for kaos og spildtid.
 
+
+**OBS**
+Vær opmærksom på, at da vi arbejder på projektet som gruppe, har vi valgt at lave på det samme projekt, og det fremgår derfor øverst på hver side, hvem der har haft ansvaret for hver enkelt delelement!
