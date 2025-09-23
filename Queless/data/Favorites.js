@@ -1,0 +1,1 @@
+export const BRANDS = ["Ganni","Exercere","Bareen","Hummel","Adidas","Nike","Puma","Asics","New Balance","Reebok","Fila","Lacoste","Levis","Tommy Hilfiger","Calvin Klein","Guess","Vans","Converse","Superdry","The North Face"];

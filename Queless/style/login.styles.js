@@ -5,13 +5,19 @@ export default StyleSheet.create({
     bg: { flex: 1 },                        // bruges på <ImageBackground>
     container: {
         flex: 1,
-        alignItems: 'center',        // behold horisontalt centreret
         justifyContent: 'flex-start',// ← læg indholdet øverst
-        paddingHorizontal: 24,
         paddingTop: 150,
-        marginBottom: 210,
     },
-    title: { fontSize: 45, marginBottom: 12, color: 'white', width: '80%' },
+
+    // smal, centeret kolonne
+    content: {
+        width: '80%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+    },
+
+    title: { fontSize: 40, marginBottom: 40, color: 'white', width: '80%' },
     titleBold: { fontWeight: '700' },
     titleItalic: { fontWeight: '600', fontStyle: 'italic' },
     input: {
@@ -24,15 +30,14 @@ export default StyleSheet.create({
         paddingVertical: 10,
         marginBottom: 20,
     },
-    
-    button: {
-        width: '100%',
+
+
+    buttonWrap: {
+        width: '50%',
         maxWidth: 360,
-        paddingVertical: 14,
-        borderRadius: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#0A84FF',
         marginTop: 12,
+        alignSelf: 'center',
+        backgroundColor: '#054395',
+        borderRadius: 33.33,
     },
 });

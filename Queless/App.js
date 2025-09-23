@@ -7,7 +7,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 import Login from './screens/Login';
-import NavigationBar from './navigation/TabBar'; // ← hvis filen hedder TabBar.js: './navigation/TabBar'
+
+// tab-navigationen 
+import Home from './screens/Home';
 
 const Stack = createNativeStackNavigator();
 
