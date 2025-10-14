@@ -1,6 +1,5 @@
 // Malou Bjørnholt
-import * as React from 'react';
-import { ScrollView, View, Text, FlatList } from 'react-native';
+import {View, Text, FlatList } from 'react-native';
 import styles from '../style/friends.styles';
 import {FRIENDS} from '../data/Friends';
 

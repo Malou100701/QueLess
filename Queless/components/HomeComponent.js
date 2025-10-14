@@ -1,5 +1,4 @@
 //Josephine Holst-Christensen
-import * as React from 'react';
 import { ScrollView, Text, Button, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../style/home.styles';
