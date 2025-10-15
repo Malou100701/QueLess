@@ -38,7 +38,7 @@ export default function App() {
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="LoginBusiness" component={LoginBusiness} />
         <Stack.Screen name="SignUpBusiness" component={SignUpBusiness} />
-        <Stack.Screen name="HomeBusiness" component={NavigationBarBusiness} />
+        <Stack.Screen name="Home-Business" component={NavigationBarBusiness} />
 
       </Stack.Navigator>
     </NavigationContainer>

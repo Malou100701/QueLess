@@ -29,7 +29,7 @@ export default function LoginForm() {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       // Succes -> videre i appen
-      navigation.replace('Home'); // ret evt. til dit rigtige rutenavn
+      navigation.replace('Home-Business'); 
     } catch (error) {
       // Vis fejlkode/-besked for lettere fejlfinding
       console.log('login error:', error?.code, error?.message);

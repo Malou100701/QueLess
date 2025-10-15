@@ -7,7 +7,7 @@ export default function Login({ navigation }) {
   const goHome = () => {
     const navn = name.trim();
     if (!navn) return;
-    navigation.replace('HomeBusiness', { name: navn });
+    navigation.replace('Home-Business', { name: navn });
   };
 
   return (
