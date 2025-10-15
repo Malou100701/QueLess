@@ -1,6 +1,11 @@
 // database/firebase.js
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import {
+  initializeAuth,
+  getReactNativePersistence,
+} from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Indsæt din egen config her fra Firebase Console
 const firebaseConfig = {
@@ -21,4 +26,10 @@ export const rtdb = getDatabase(
   "https://queless-e20e8-default-rtdb.europe-west1.firebasedatabase.app/"
 );
 
+//brugt til at gemme login/authentificering
+const auth = initializeAuth(firebaseApp, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
+
+export { auth };
 

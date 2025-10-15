@@ -40,15 +40,4 @@ export default StyleSheet.create({
         backgroundColor: '#054395',
         borderRadius: 33.33,
     },
-
-    registerLinkWrap: {
-        marginTop: 12,
-        alignItems: 'center',
-    },
-    registerLinkText: {
-        textDecorationLine: 'underline',
-        fontSize: 16,
-        color: '#000000',
-    }
 });
-
