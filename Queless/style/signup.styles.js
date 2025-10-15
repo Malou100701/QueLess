@@ -31,7 +31,6 @@ export default StyleSheet.create({
         marginBottom: 20,
     },
 
-
     buttonWrap: {
         width: '50%',
         maxWidth: 360,
@@ -39,5 +38,19 @@ export default StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#054395',
         borderRadius: 33.33,
+    },
+     SignUpLinkWrap: {
+        marginTop: 12,
+        alignItems: 'center',
+    },
+    SignUpLinkText: {
+        textDecorationLine: 'underline',
+        fontSize: 16,
+        color: '#000000',
+    },
+
+     footerLink: {
+        alignItems: 'center',
+        marginTop: 300,   // placere den i bunden
     },
 });

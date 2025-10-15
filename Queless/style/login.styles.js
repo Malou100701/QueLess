@@ -41,14 +41,19 @@ export default StyleSheet.create({
         borderRadius: 33.33,
     },
 
-    registerLinkWrap: {
+    SignUpLinkWrap: {
         marginTop: 12,
         alignItems: 'center',
     },
-    registerLinkText: {
+    SignUpLinkText: {
         textDecorationLine: 'underline',
         fontSize: 16,
         color: '#000000',
-    }
+    },
+
+    footerLink: {
+        alignItems: 'center',
+        marginTop: 300,   // placere den i bunden
+    },
 });
 

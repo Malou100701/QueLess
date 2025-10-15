@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import {useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, Button } from 'react-native';
 import { rtdb } from "../database/firebase";
 import { ref, push, set, onValue } from "firebase/database";

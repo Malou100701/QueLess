@@ -5,18 +5,20 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { onAuthStateChanged } from 'firebase/auth';
-
 import { auth } from './database/firebase';
-
 import Login from './screens/Login';
 import SignUp from './screens/SignUp';
-import NavigationBar from './navigation/TabBar'; // ← hvis filen hedder TabBar.js: './navigation/TabBar'
+import NavigationBar from './navigation/TabBar';
+import NavigationBarBusiness from './navigation/TabBar-Business';
+import LoginBusiness from './screens/Login-Business';
+import SignUpBusiness from './screens/SignUp-Business';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [user, setUser] = useState(null);
 
+  // holder den nuværende bruger i lokal state. null = ingen er logget ind
+  const [user, setUser] = useState(null);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, currentUser => {
       setUser(currentUser);
@@ -33,7 +35,10 @@ export default function App() {
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={NavigationBar} />
-        <Stack.Screen name="Register" component={SignUp} />
+        <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="LoginBusiness" component={LoginBusiness} />
+        <Stack.Screen name="SignUpBusiness" component={SignUpBusiness} />
+        <Stack.Screen name="HomeBusiness" component={NavigationBarBusiness} />
 
       </Stack.Navigator>
     </NavigationContainer>

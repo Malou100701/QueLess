@@ -1,17 +1,13 @@
-// Malou Bjørnholt 
-import { useNavigation } from '@react-navigation/native';
-import Signup from '../components/SignupComponent';
+import { useNavigation } from '@react-navigation/native'; //denne bruges til at navigere mellem skærme, f.eks. efter en succesfuld tilmelding, så kan vi sende brugeren tilbage til login skærmen
+import SignupComponent from '../components/SignupComponent'; //importerer denne for at bruge den i SignUp skærmen, så vi kan genbruge koden
 
 export default function SignUp() {
   const navigation = useNavigation();
-
   return (
-    <Signup
+    <SignupComponent
       onSuccess={() => {
-        // hvis Register blev åbnet fra Login, så gå bare tilbage
         if (navigation.canGoBack()) navigation.goBack();
-        // ellers navigér eksplicit til Login
-        else navigation.navigate('Login');
+        else navigation.navigate('Login'); 
       }}
     />
   );
