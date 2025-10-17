@@ -1,12 +1,13 @@
-import {useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, TextInput, Button } from 'react-native';
+import { colors } from '../style/theme'; // importérer theme
 import { rtdb } from "../database/firebase";
 import { ref, push, set, onValue } from "firebase/database";
-import { colors } from '../style/theme'; // 👈 importér theme
 
 export default function FavoritesContent() {
   const [brands, setBrands] = useState([]);
   const [newBrand, setNewBrand] = useState('');
+  const [query, setQuery] = useState(''); // ← søgetekst
 
   const brandsRef = ref(rtdb, 'brands');
 
@@ -18,6 +19,13 @@ export default function FavoritesContent() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Filtrer brands efter søgning (case-insensitive)
+  const filteredBrands = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return brands;
+    return brands.filter((b) => String(b).toLowerCase().includes(q));
+  }, [brands, query]);
 
   // Tilføj nyt brand
   const addBrand = () => {
@@ -32,10 +40,31 @@ export default function FavoritesContent() {
     <View
       style={{
         flex: 1,
-        backgroundColor: colors.background, // 🎨 fra theme
+        backgroundColor: colors.background, // fra theme
         padding: 20,
       }}
     >
+      {/* Søgefelt */}
+      <TextInput
+        placeholder="Søg efter brand…"
+        value={query}
+        onChangeText={setQuery}
+        style={{
+          borderWidth: 1,
+          borderColor: colors.border,
+          backgroundColor: colors.surface,
+          color: colors.text,
+          padding: 10,
+          marginBottom: 10,
+          borderRadius: 8,
+        }}
+        placeholderTextColor={colors.muted}
+        autoCorrect={false}
+        autoCapitalize="none"
+        clearButtonMode="while-editing"
+      />
+
+      {/* Opret nyt brand */}
       <TextInput
         placeholder="Skriv et brand"
         value={newBrand}
@@ -55,11 +84,18 @@ export default function FavoritesContent() {
       <Button title="Tilføj" color={colors.brand} onPress={addBrand} />
 
       <FlatList
-        data={brands}
+        data={filteredBrands}
         keyExtractor={(item, i) => `${item}-${i}`}
+        keyboardShouldPersistTaps="handled"
+        ListEmptyComponent={
+          <Text style={{ padding: 8, color: colors.muted }}>
+            {query ? 'Ingen match på søgningen.' : 'Ingen favoritter endnu.'}
+          </Text>
+        }
         renderItem={({ item }) => (
           <Text style={{ padding: 8, color: colors.text }}>{item}</Text>
         )}
+        style={{ marginTop: 10 }}
       />
     </View>
   );
