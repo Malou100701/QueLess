@@ -1,4 +1,4 @@
-// Malou Bjørnholt
+// Josephine Holst-Christensen
 import {
   Text,
   View,

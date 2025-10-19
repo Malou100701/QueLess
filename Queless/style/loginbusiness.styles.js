@@ -1,4 +1,4 @@
-// Malou Bjørnholt
+// Josephine Holst-Christensen
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({

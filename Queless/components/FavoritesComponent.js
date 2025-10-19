@@ -1,3 +1,4 @@
+//Josephine Holst-Christensen
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, TextInput, Button } from 'react-native';
 import { colors } from '../style/theme'; // importérer theme
