@@ -32,7 +32,7 @@ Vær opmærksom på, at da vi arbejder på projektet som gruppe, har vi valgt at
 
 **Link til LOOM Video**
 
-https://www.loom.com/share/6d299af947ad48a5b06440700966acb7?sid=16ae4dcf-35f0-4662-b544-797c36fa547b
+[https://www.loom.com/share/6d299af947ad48a5b06440700966acb7?sid=16ae4dcf-35f0-4662-b544-797c36fa547b](https://www.loom.com/share/3160ae800dc24df7a5443580c951b395?sid=8c0d41b9-bf73-435a-b39d-a01ea91195f1)
 
 **Opdeling kode**
 Vores kode er opdelt ved at vi har navngivet det ansvarlige gruppemedlem er angivet med navn i toppen af hver side, så I kan se hvem der har kodet hvad :)
