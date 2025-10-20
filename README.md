@@ -34,3 +34,7 @@ Vær opmærksom på, at da vi arbejder på projektet som gruppe, har vi valgt at
 
 https://www.loom.com/share/6d299af947ad48a5b06440700966acb7?sid=16ae4dcf-35f0-4662-b544-797c36fa547b
 
+**Opdeling kode**
+Vores kode er opdelt ved at vi har navngivet det ansvarlige gruppemedlem er angivet med navn i toppen af hver side, så I kan se hvem der har kodet hvad :)
+
+
