@@ -1,19 +1,28 @@
-//Josephine Holst-Christensen
-import { ScrollView, Text, Button, View } from 'react-native';
+// HomeContent.js
+import React from 'react';
+import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../style/home.styles';
+import ImageSliderContent from './ImageSliderComponent';
+import CategoryComponent from './CategoryComponent';
 
 export default function HomeContent() {
   const navigation = useNavigation();
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Hjemmeskærm</Text>
-      <Text style={styles.body}>Brug fanerne i bunden for at navigere.</Text>
-      <View style={{ marginTop: 16 }}>
-        <Button title="Log ud" onPress={() => navigation.navigate('Login')} />
-        {/* En knap der navigere tilbage til login siden :) */}
+
+      {/* Sektion: UDFORSK + image slider */}
+      <View style={styles.sliderSection}>
+        <Text style={styles.smallerTitles}>UDFORSK</Text>
+        <ImageSliderContent />
       </View>
+
+     <View style={{ marginTop: 32 }}>
+        <Text style={styles.smallerTitles}>KATEGORIER</Text>
+        <CategoryComponent />
+      </View>
+
     </ScrollView>
   );
 }

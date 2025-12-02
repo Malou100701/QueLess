@@ -7,6 +7,7 @@ import { colors, headerStyling } from '../style/theme';
 // Skærme
 import Home from '../screens/Home';            
 import MyOutlets from '../screens/MyOutlets';
+import QRscanner from '../screens/QRscanner';
 
 // Ikoner
 import HomeIcon from '../assets/icons/Home.png';
@@ -40,6 +41,7 @@ export default function NavigationBarBusiness() {
       })}
     >
       <Tab.Screen name="Hjem" component={Home} options={{ title: 'N/A' }} />
+      <Tab.Screen name="QRScanner" component={QRscanner} options={{ title: 'N/A' }} />
       <Tab.Screen name="MyOutlets" component={MyOutlets} options={{ title: 'N/A' }} />
     </Tab.Navigator>
   );

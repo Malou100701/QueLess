@@ -1,19 +1,16 @@
-// Malou Bjørnholt
-import { ScrollView, Text } from 'react-native';
+import { Pressable, ScrollView, Text } from 'react-native';
 import styles from '../style/home.styles'; 
-import QRCode from 'react-native-qrcode-svg';
 
-export default function CheckInContent() {
-  
+export default function QRscannerContent() {
+
+
   return (
     <ScrollView
       style={styles.page}                  
       contentContainerStyle={styles.container}
     >
       <Text style={styles.title}>Tjek ind med din QR-kode</Text>
-      <QRCode
-        value="https://github.com/Malou100701/QueLess.git"
-        size={250}/>
+      
     </ScrollView>
   );
 }

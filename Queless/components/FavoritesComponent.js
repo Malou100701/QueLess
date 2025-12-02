@@ -1,25 +1,12 @@
-//Josephine Holst-Christensen
-import React, { useState, useEffect, useMemo } from 'react';
+// Josephine Holst-Christensen
+import React, { useState, useMemo } from 'react';
 import { View, Text, FlatList, TextInput, Button } from 'react-native';
-import { colors } from '../style/theme'; // importérer theme
-import { rtdb } from "../database/firebase";
-import { ref, push, set, onValue } from "firebase/database";
+import { colors } from '../style/theme';
 
 export default function FavoritesContent() {
-  const [brands, setBrands] = useState([]);
+  const [brands, setBrands] = useState([]);      // kun lokal state
   const [newBrand, setNewBrand] = useState('');
-  const [query, setQuery] = useState(''); // ← søgetekst
-
-  const brandsRef = ref(rtdb, 'brands');
-
-  // Live listener til Firebase
-  useEffect(() => {
-    const unsubscribe = onValue(brandsRef, (snapshot) => {
-      const data = snapshot.val();
-      setBrands(data ? Object.values(data) : []);
-    });
-    return () => unsubscribe();
-  }, []);
+  const [query, setQuery] = useState('');
 
   // Filtrer brands efter søgning (case-insensitive)
   const filteredBrands = useMemo(() => {
@@ -28,12 +15,11 @@ export default function FavoritesContent() {
     return brands.filter((b) => String(b).toLowerCase().includes(q));
   }, [brands, query]);
 
-  // Tilføj nyt brand
+  // Tilføj nyt brand (kun lokalt)
   const addBrand = () => {
     const trimmed = newBrand.trim();
     if (!trimmed) return;
-    const newRef = push(brandsRef);
-    set(newRef, trimmed);
+    setBrands((prev) => [...prev, trimmed]);
     setNewBrand('');
   };
 
@@ -41,7 +27,7 @@ export default function FavoritesContent() {
     <View
       style={{
         flex: 1,
-        backgroundColor: colors.background, // fra theme
+        backgroundColor: colors.background,
         padding: 20,
       }}
     >
@@ -65,7 +51,7 @@ export default function FavoritesContent() {
         clearButtonMode="while-editing"
       />
 
-      {/* Opret nyt brand */}
+      {/* Opret nyt brand (lokalt) */}
       <TextInput
         placeholder="Skriv et brand"
         value={newBrand}

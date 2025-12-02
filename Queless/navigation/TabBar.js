@@ -1,11 +1,12 @@
 // Josephine Holst-Christensen
 // navigation/NavigationBar.js
-import { Image } from 'react-native';
+import React from 'react';
+import { Image, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colors, headerStyling } from '../style/theme';
+import { colors } from '../style/theme';
 
 // Skærme
-import Home from '../screens/Home';            
+import Home from '../screens/Home';
 import CheckIn from '../screens/CheckIn';
 import Favorites from '../screens/Favorites';
 import Friends from '../screens/Friends';
@@ -17,6 +18,7 @@ import HeartIcon from '../assets/icons/heart.png';
 import FriendsIcon from '../assets/icons/friends.png';
 import CalendarIcon from '../assets/icons/calendar.png';
 import QRIcon from '../assets/icons/QRcode.png';
+import logoutIcon from '../assets/icons/logout.png';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,12 +35,26 @@ export default function NavigationBar() {
     <Tab.Navigator
       initialRouteName="Hjem"
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.background  },
+        // HEADER
+        headerStyle: { backgroundColor: colors.background },
         headerShadowVisible: false,
-        headerTitleAlign: 'center',
+        headerTitleAlign: 'left',
+        headerTitleStyle: {
+          fontSize: 36,
+          fontWeight: '800',
+          letterSpacing: 2,
+          color: colors.text,
+        },
+        headerTitleContainerStyle: {
+          paddingLeft: 16,
+        },
+
+        // TAB BAR
         tabBarStyle: { backgroundColor: colors.surface },
-        tabBarActiveTintColor: colors.tabActive,       
-        tabBarInactiveTintColor: colors.tabInactive,   
+        tabBarActiveTintColor: colors.tabActive,
+        tabBarInactiveTintColor: colors.tabInactive,
+
+        // IKONER I TABBAR
         tabBarIcon: ({ color, size }) => (
           <Image
             source={TAB_ICONS[route.name]}
@@ -48,11 +64,47 @@ export default function NavigationBar() {
         ),
       })}
     >
-      <Tab.Screen name="Hjem" component={Home} options={{ title: 'Hjem' }} />
-      <Tab.Screen name="Favorites" component={Favorites} options={{ title: 'Favoritter' }} />
-      <Tab.Screen name="CheckIn" component={CheckIn} options={{ title: 'Tjek ind' }} />
-      <Tab.Screen name="Friends" component={Friends} options={{ title: 'Venner' }} />
-      <Tab.Screen name="MyOutlets" component={MyOutlets} options={{ title: 'Mine tider' }} />
+      {/* HJEM – med logud-ikon i headerRight */}
+      <Tab.Screen
+        name="Hjem"
+        component={Home}
+        options={({ navigation }) => ({
+          title: 'HJEM',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Login')}
+              style={{ marginRight: 16 }}
+            >
+              <Image
+                source={logoutIcon}
+                style={{ width: 22, height: 22 }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          ),
+        })}
+      />
+
+      <Tab.Screen
+        name="Favorites"
+        component={Favorites}
+        options={{ title: 'FAVORITTER' }}
+      />
+      <Tab.Screen
+        name="CheckIn"
+        component={CheckIn}
+        options={{ title: 'MINE BILLET' }}
+      />
+      <Tab.Screen
+        name="Friends"
+        component={Friends}
+        options={{ title: 'VENNER' }}
+      />
+      <Tab.Screen
+        name="MyOutlets"
+        component={MyOutlets}
+        options={{ title: 'MINE TIDER' }}
+      />
     </Tab.Navigator>
   );
 }

@@ -1,4 +1,4 @@
-package com.queless
+package com.anonymous.Queless
 
 import android.app.Application
 import android.content.res.Configuration

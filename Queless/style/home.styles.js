@@ -9,10 +9,30 @@ export default StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: spacing.lg,
   },
-  title: { fontSize: 24, marginBottom: spacing.md, color: colors.text },
+  title: { fontSize: 30, fontWeight: '700', marginBottom: spacing.md, color: colors.text },
+
   body: { textAlign: 'center', color: colors.muted },
+
+  sliderSection: {
+    width: '100%',
+    marginTop: spacing.lg,
+    marginBottom: 30, 
+  },
+
+  smallerTitles: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+
+  logoutIcon: {
+  position: 'absolute',
+  top: 0,  
+  right: 20,
+  zIndex: 10,
+},
+
 });
