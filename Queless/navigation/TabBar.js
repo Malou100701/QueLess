@@ -23,15 +23,16 @@ import QRIcon from '../assets/icons/QRcode.png';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+//  🔥 NØGLERNE SKAL MATCHE TAB-NAVNENE PRÆCIS 🔥
 const TAB_ICONS = {
   Hjem: HomeIcon,
-  Favorites: HeartIcon,
-  CheckIn: QRIcon,
-  Friends: FriendsIcon,
-  MyOutlets: CalendarIcon,
+  Favoritter: HeartIcon,
+  'Tjek ind': QRIcon,
+  Venner: FriendsIcon,
+  'Mine tider': CalendarIcon,
 };
 
-// ⭐ mini-stack til Hjem-tabben
+// mini-stack til Hjem-tabben
 function HomeStackScreen() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -46,56 +47,27 @@ export default function NavigationBar() {
     <Tab.Navigator
       initialRouteName="Hjem"
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.background },
-        headerShadowVisible: false,
-        headerTitleAlign: 'left',
-        headerTitleStyle: {
-          fontSize: 24,
-          fontWeight: '700',
-          letterSpacing: 1,
-          color: colors.text,
-        },
-        headerTitleContainerStyle: { paddingLeft: 16 },
-
+        headerShown: false,
         tabBarStyle: { backgroundColor: colors.surface },
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={TAB_ICONS[route.name]}
-            style={{ width: size, height: size, tintColor: color }}
-            resizeMode="contain"
-          />
-        ),
+        tabBarIcon: ({ color, size }) => {
+          const iconSource = TAB_ICONS[route.name];
+          return (
+            <Image
+              source={iconSource}
+              style={{ width: size, height: size, tintColor: color }}
+              resizeMode="contain"
+            />
+          );
+        },
       })}
     >
-      {/* HJEM-tabben bruger nu HomeStackScreen */}
-      <Tab.Screen
-        name="Hjem"
-        component={HomeStackScreen}
-        options={{ title: 'Hjem', headerShown: false }}
-      />
-
-      <Tab.Screen
-        name="Favorites"
-        component={Favorites}
-        options={{ title: 'Favoritter' }}
-      />
-      <Tab.Screen
-        name="CheckIn"
-        component={CheckIn}
-        options={{ title: 'Mine Billet' }}
-      />
-      <Tab.Screen
-        name="Friends"
-        component={Friends}
-        options={{ title: 'Venner' }}
-      />
-      <Tab.Screen
-        name="MyOutlets"
-        component={MyOutlets}
-        options={{ title: 'Mine tider' }}
-      />
+      <Tab.Screen name="Hjem" component={HomeStackScreen} />
+      <Tab.Screen name="Favoritter" component={Favorites} />
+      <Tab.Screen name="Tjek ind" component={CheckIn} />
+      <Tab.Screen name="Venner" component={Friends} />
+      <Tab.Screen name="Mine tider" component={MyOutlets} />
     </Tab.Navigator>
   );
 }

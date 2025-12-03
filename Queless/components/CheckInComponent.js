@@ -1,19 +1,21 @@
 // Malou Bjørnholt
 import { ScrollView, Text } from 'react-native';
-import styles from '../style/home.styles'; 
-import QRCode from 'react-native-qrcode-svg';
+import styles from '../style/home.styles';
+import AppHeader from './AppHeaderComponent';
 
 export default function CheckInContent() {
-  
+
   return (
     <ScrollView
-      style={styles.page}                  
+      style={styles.page}
       contentContainerStyle={styles.container}
     >
-      <Text style={styles.title}>Tjek ind med din QR-kode</Text>
-      <QRCode
-        value="https://github.com/Malou100701/QueLess.git"
-        size={250}/>
+
+      <AppHeader
+        title="Tjek ind"
+        uppercase={true}
+        showLogout={true}
+      />
     </ScrollView>
   );
 }

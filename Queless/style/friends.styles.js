@@ -1,30 +1,29 @@
 // Malou Bjørnholt
 import { StyleSheet } from 'react-native';
-import { colors } from './theme';
+import { colors, spacing } from './theme';
 
 export default StyleSheet.create({
+  page: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+
   container: {
+    flexGrow: 1,
+    padding: spacing.lg,    
+  },
+
+  centerWrapper: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    backgroundColor: colors.background, 
+    marginTop: 40,
+  },
 
-  },
-  listWrapper: {
-    width: '70%',
-    alignSelf: 'center',
-    backgroundColor: '#73b58aff',
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  itemText: {
-    fontSize: 12,
-    textAlign: 'center',
-    paddingVertical: 8,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#ddd',
+  comingSoon: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.text,
+    opacity: 0.6,
   },
 });

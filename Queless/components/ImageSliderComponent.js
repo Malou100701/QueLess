@@ -12,7 +12,6 @@ export default function ImageSliderContent() {
     const brandsRef = ref(rtdb, 'brands');
 
     const unsubscribe = onValue(brandsRef, snapshot => {
-        console.log("onValue kaldt!");
       const data = snapshot.val() || {};
 
       const list = Object.entries(data).map(([id, value]) => ({

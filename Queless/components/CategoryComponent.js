@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { categories } from '../data/CategoryBundle';
 import styles from '../style/category.styles';
 
+
 export default function CategoryComponent() {
   const navigation = useNavigation();
 

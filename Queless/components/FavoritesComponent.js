@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  ScrollView,
   TextInput,
   Image,
   ActivityIndicator,
@@ -17,6 +17,7 @@ import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/favorite.styles';
 import HeartOutline from '../assets/icons/heart-outline.png';
 import HeartFilled from '../assets/icons/heart-filled.png';
+import AppHeader from './AppHeaderComponent';
 
 export default function FavoritesContent() {
   const [allBrands, setAllBrands] = useState([]);
@@ -59,7 +60,7 @@ export default function FavoritesContent() {
     return () => unsub();
   }, []);
 
-  // 3) Toggle favorit (samme som på Category-screen)
+  // 3) Toggle favorit
   const toggleFavorite = (brandId) => {
     const user = auth.currentUser;
     if (!user) {
@@ -70,10 +71,8 @@ export default function FavoritesContent() {
     const favRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
 
     if (favoriteIds && favoriteIds[brandId]) {
-      // var favorit → fjern
       remove(favRef);
     } else {
-      // ikke favorit → tilføj
       set(favRef, true);
     }
   };
@@ -106,7 +105,13 @@ export default function FavoritesContent() {
   }
 
   return (
-    <View style={styles.page}>
+    <ScrollView style={styles.page} contentContainerStyle={styles.container}>
+      <AppHeader
+        title="favoritter"
+        uppercase={true}
+        showLogout={true}
+      />
+
       {/* Søgefelt */}
       <View style={styles.searchContainer}>
         <TextInput
@@ -121,26 +126,25 @@ export default function FavoritesContent() {
         />
       </View>
 
-      {/* Liste med store kort */}
-      <FlatList
-        data={filteredFavorites}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            {query
-              ? 'Ingen favoritter matcher din søgning.'
-              : 'Du har ingen favoritter endnu.'}
-          </Text>
-        }
-        renderItem={({ item }) => {
+      {/* Tom tekst hvis ingen resultater */}
+      {filteredFavorites.length === 0 && (
+        <Text style={styles.emptyText}>
+          {query
+            ? 'Ingen favoritter matcher din søgning.'
+            : 'Du har ingen favoritter endnu.'}
+        </Text>
+      )}
+
+      {/* Kort-listen (samme kort-stil som før) */}
+      <View style={styles.listContainer}>
+        {filteredFavorites.map(item => {
           const imageSource = localImagesByKey[item.imageKey];
           if (!imageSource) return null;
 
           const isFavorite = !!favoriteIds[item.id];
 
           return (
-            <View style={styles.card}>
+            <View key={item.id} style={styles.card}>
               <Image
                 source={imageSource}
                 style={styles.image}
@@ -148,7 +152,7 @@ export default function FavoritesContent() {
               />
               <View style={styles.overlay} />
 
-              {/* ❤️ favorit-knap – også til at fjerne fra listen */}
+              {/* ❤️ favorit-knap */}
               <TouchableOpacity
                 style={styles.favoriteButton}
                 onPress={() => toggleFavorite(item.id)}
@@ -165,8 +169,8 @@ export default function FavoritesContent() {
               </View>
             </View>
           );
-        }}
-      />
-    </View>
+        })}
+      </View>
+    </ScrollView>
   );
 }

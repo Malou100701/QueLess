@@ -1,6 +1,7 @@
 // Malou Bjørnholt
 import { ScrollView, Text } from 'react-native';
 import styles from '../style/home.styles'; 
+import AppHeader from './AppHeaderComponent';
 
 export default function MyOutletsContent() {
   return (
@@ -8,8 +9,11 @@ export default function MyOutletsContent() {
       style={styles.page}                  
       contentContainerStyle={styles.container}
     >
-      <Text style={styles.title}>Mine lagersalg</Text>
-      <Text style={styles.body}>Brug fanerne i bunden for at navigere.</Text>
+       <AppHeader
+              title="mine tider"
+              uppercase={true}
+              showLogout={true}
+            />
     </ScrollView>
   );
 }

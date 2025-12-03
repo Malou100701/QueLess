@@ -11,7 +11,7 @@ export default StyleSheet.create({
   container: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
-    paddingTop: 80,    // luft ned fra notch/header
+    paddingTop: 20,    // luft ned fra notch/header
   },
 
   center: {

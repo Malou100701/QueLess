@@ -1,29 +1,26 @@
-// style/favorites.styles.js
-// Josephine Holst-Christensen
-
+// style/favorite.styles.js
 import { StyleSheet } from 'react-native';
 import { colors, spacing } from './theme';
 
 export default StyleSheet.create({
-  // Hele siden
   page: {
     flex: 1,
     backgroundColor: colors.background,
   },
 
-  // Indholdet i FlatList
+  container: {
+    flexGrow: 1,
+    padding: spacing.lg,
+  },
+
   listContainer: {
-    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     paddingTop: spacing.sm,
   },
 
-  // Container rundt om søgefeltet
   searchContainer: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
-    backgroundColor: colors.background,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
   },
 
   searchInput: {
@@ -36,11 +33,10 @@ export default StyleSheet.create({
   },
 
   emptyText: {
-    padding: 20,
+    paddingVertical: 20,
     color: colors.muted,
   },
 
-  // CARD – samme stil som kategori-siden
   card: {
     borderRadius: 20,
     overflow: 'hidden',
@@ -70,7 +66,6 @@ export default StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ❤️ favorit-knap
   favoriteButton: {
     position: 'absolute',
     top: 10,
@@ -84,6 +79,6 @@ export default StyleSheet.create({
   favoriteIcon: {
     width: 18,
     height: 18,
-    tintColor: '#fff', // hvidt hjerte
+    tintColor: '#fff',
   },
 });
