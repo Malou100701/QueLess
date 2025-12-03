@@ -1,12 +1,13 @@
-// Josephine Holst-Christensen
-// navigation/NavigationBar.js
+// navigation/TabBar.js
 import React from 'react';
-import { Image, TouchableOpacity } from 'react-native';
+import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colors } from '../style/theme';
 
 // Skærme
 import Home from '../screens/Home';
+import Category from '../screens/Category';
 import CheckIn from '../screens/CheckIn';
 import Favorites from '../screens/Favorites';
 import Friends from '../screens/Friends';
@@ -18,9 +19,9 @@ import HeartIcon from '../assets/icons/heart.png';
 import FriendsIcon from '../assets/icons/friends.png';
 import CalendarIcon from '../assets/icons/calendar.png';
 import QRIcon from '../assets/icons/QRcode.png';
-import logoutIcon from '../assets/icons/logout.png';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const TAB_ICONS = {
   Hjem: HomeIcon,
@@ -30,31 +31,35 @@ const TAB_ICONS = {
   MyOutlets: CalendarIcon,
 };
 
+// ⭐ mini-stack til Hjem-tabben
+function HomeStackScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeMain" component={Home} />
+      <Stack.Screen name="Category" component={Category} />
+    </Stack.Navigator>
+  );
+}
+
 export default function NavigationBar() {
   return (
     <Tab.Navigator
       initialRouteName="Hjem"
       screenOptions={({ route }) => ({
-        // HEADER
         headerStyle: { backgroundColor: colors.background },
         headerShadowVisible: false,
         headerTitleAlign: 'left',
         headerTitleStyle: {
-          fontSize: 36,
-          fontWeight: '800',
-          letterSpacing: 2,
+          fontSize: 24,
+          fontWeight: '700',
+          letterSpacing: 1,
           color: colors.text,
         },
-        headerTitleContainerStyle: {
-          paddingLeft: 16,
-        },
+        headerTitleContainerStyle: { paddingLeft: 16 },
 
-        // TAB BAR
         tabBarStyle: { backgroundColor: colors.surface },
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
-
-        // IKONER I TABBAR
         tabBarIcon: ({ color, size }) => (
           <Image
             source={TAB_ICONS[route.name]}
@@ -64,46 +69,32 @@ export default function NavigationBar() {
         ),
       })}
     >
-      {/* HJEM – med logud-ikon i headerRight */}
+      {/* HJEM-tabben bruger nu HomeStackScreen */}
       <Tab.Screen
         name="Hjem"
-        component={Home}
-        options={({ navigation }) => ({
-          title: 'HJEM',
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Login')}
-              style={{ marginRight: 16 }}
-            >
-              <Image
-                source={logoutIcon}
-                style={{ width: 22, height: 22 }}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          ),
-        })}
+        component={HomeStackScreen}
+        options={{ title: 'Hjem', headerShown: false }}
       />
 
       <Tab.Screen
         name="Favorites"
         component={Favorites}
-        options={{ title: 'FAVORITTER' }}
+        options={{ title: 'Favoritter' }}
       />
       <Tab.Screen
         name="CheckIn"
         component={CheckIn}
-        options={{ title: 'MINE BILLET' }}
+        options={{ title: 'Mine Billet' }}
       />
       <Tab.Screen
         name="Friends"
         component={Friends}
-        options={{ title: 'VENNER' }}
+        options={{ title: 'Venner' }}
       />
       <Tab.Screen
         name="MyOutlets"
         component={MyOutlets}
-        options={{ title: 'MINE TIDER' }}
+        options={{ title: 'Mine tider' }}
       />
     </Tab.Navigator>
   );
