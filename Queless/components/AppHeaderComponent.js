@@ -16,6 +16,11 @@ export default function AppHeader({
   const titleText = uppercase ? title?.toUpperCase() : title;
   const isUppercase = !!uppercase;
 
+   const handleLogout = () => {
+    navigation.getParent()?.navigate('Login') || navigation.navigate('Login');
+  };
+  
+
   return (
     <View style={styles.container}>
       {/* venstre side – bredde 0 hvis der IKKE er back-knap */}
@@ -46,7 +51,7 @@ export default function AppHeader({
 
       <View style={styles.sideRight}>
         {showLogout && (
-          <TouchableOpacity onPress={() => console.log('logout')}>
+          <TouchableOpacity onPress={handleLogout}>
             <Image source={LogoutIcon} style={styles.icon} />
           </TouchableOpacity>
         )}

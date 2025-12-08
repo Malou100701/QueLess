@@ -1,5 +1,5 @@
 // components/SpecificCategoryComponent.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,14 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { ref, onValue, set, remove } from 'firebase/database';
 import { rtdb, auth } from '../database/firebase';
 import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/specificCategory.styles';
+import { colors } from '../style/theme';
 import AppHeader from './AppHeaderComponent';
 import FavoriteToggleComponent from './FavoriteToggleComponent';
 
@@ -23,6 +25,7 @@ export default function SpecificCategoryComponent() {
 
   const [brandsInCategory, setBrandsInCategory] = useState(null);
   const [favoriteBrandIds, setFavoriteBrandIds] = useState({});
+  const [searchQuery, setSearchQuery] = useState(''); // 🔹 ny state til søgning
 
   // --------------------------------------------------------
   // Hent brands i den valgte kategori
@@ -123,6 +126,18 @@ export default function SpecificCategoryComponent() {
     }
   };
 
+  // 🔹 Filtrér brands i kategorien ud fra søgetekst (titel)
+  const filteredBrandsInCategory = useMemo(() => {
+    if (!brandsInCategory) return [];
+
+    const trimmedQuery = searchQuery.trim().toLowerCase();
+    if (!trimmedQuery) return brandsInCategory;
+
+    return brandsInCategory.filter(brand =>
+      String(brand.title || '').toLowerCase().includes(trimmedQuery)
+    );
+  }, [brandsInCategory, searchQuery]);
+
   // --------------------------------------------------------
   // Loader mens vi henter brands
   // --------------------------------------------------------
@@ -162,7 +177,28 @@ export default function SpecificCategoryComponent() {
         showLogout={true}
       />
 
-      {brandsInCategory.map(brandItem => {
+      {/* 🔹 Søgefelt – magen til det i Favorites, bare for kategori */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Søg i denne kategori…"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          style={styles.searchInput}
+          placeholderTextColor={colors.muted}
+          autoCorrect={false}
+          autoCapitalize="none"
+          clearButtonMode="while-editing"
+        />
+      </View>
+
+      {/* 🔹 Tekst hvis søgningen ingen resultater giver */}
+      {filteredBrandsInCategory.length === 0 && (
+        <Text style={styles.emptyText}>
+          Ingen brands matcher din søgning.
+        </Text>
+      )}
+
+      {filteredBrandsInCategory.map(brandItem => {
         const imageSource = localImagesByKey[brandItem.imageKey];
         if (!imageSource) return null;
 

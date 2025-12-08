@@ -7,17 +7,17 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+
   container: {
     flexGrow: 1,
     padding: spacing.lg,
   },
 
-  image: {
-    width: '100%',
-    height: 200,
-    marginTop:12,
-    borderRadius: 16,
-  },
+image: {
+  width: '100%',
+  height: 220,
+  marginTop: 0,
+},
 
   title: {
   fontSize: 24,

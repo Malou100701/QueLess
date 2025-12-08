@@ -1,11 +1,10 @@
 // components/FavoritesComponent.js / FavoritesContent.js
 // Josephine Holst-Christensen
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
-  TextInput,
   Image,
   ActivityIndicator,
   TouchableOpacity,
@@ -17,12 +16,14 @@ import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/favorite.styles';
 import AppHeader from './AppHeaderComponent';
 import FavoriteToggleComponent from './FavoriteToggleComponent';
+import { useNavigation } from '@react-navigation/native';   // 🔹 tilføjet
 
 export default function FavoritesContent() {
   const [allBrands, setAllBrands] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState({});
-  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const navigation = useNavigation(); // 🔹 nu kan vi navigere
 
   // Hent alle brands
   useEffect(() => {
@@ -76,18 +77,6 @@ export default function FavoritesContent() {
     }
   };
 
-  // Lav liste med kun favoritter + filtrér på søgetekst
-  const filteredFavorites = useMemo(() => {
-    const favoritesOnly = allBrands.filter(brand => !!favoriteIds[brand.id]);
-
-    const q = query.trim().toLowerCase();
-    if (!q) return favoritesOnly;
-
-    return favoritesOnly.filter(brand =>
-      String(brand.title || '').toLowerCase().includes(q)
-    );
-  }, [allBrands, favoriteIds, query]);
-
   if (loading) {
     return (
       <View
@@ -103,6 +92,9 @@ export default function FavoritesContent() {
     );
   }
 
+  // Kun brands der er favoritter
+  const favoritesOnly = allBrands.filter(brand => !!favoriteIds[brand.id]);
+
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
       <AppHeader
@@ -111,38 +103,33 @@ export default function FavoritesContent() {
         showLogout={true}
       />
 
-      {/* Søgefelt til at filtrere favoritter */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Søg i dine favoritter…"
-          value={query}
-          onChangeText={setQuery}
-          style={styles.searchInput}
-          placeholderTextColor={colors.muted}
-          autoCorrect={false}
-          autoCapitalize="none"
-          clearButtonMode="while-editing"
-        />
-      </View>
-
-      {/* Tekst hvis der ikke er nogen favoritter eller ingen match */}
-      {filteredFavorites.length === 0 && (
+      {/* Hvis der ingen favoritter er */}
+      {favoritesOnly.length === 0 && (
         <Text style={styles.emptyText}>
-          {query
-            ? 'Ingen favoritter matcher din søgning.'
-            : 'Du har ingen favoritter endnu.'}
+          Du har ingen favoritter endnu.
         </Text>
       )}
 
       <View style={styles.listContainer}>
-        {filteredFavorites.map(item => {
+        {favoritesOnly.map(item => {
           const imageSource = localImagesByKey[item.imageKey];
           if (!imageSource) return null;
 
           const isFavorite = !!favoriteIds[item.id];
 
           return (
-            <View key={item.id} style={styles.card}>
+            <TouchableOpacity
+              key={item.id}
+              style={styles.card}
+              activeOpacity={0.8}
+
+              // 🔹 HER TILFØJER VI BRANDDETAIL NAVIGATIONEN
+              onPress={() =>
+                navigation.navigate('BrandDetail', {
+                  brandId: item.id,
+                })
+              }
+            >
               <Image
                 source={imageSource}
                 style={styles.image}
@@ -160,7 +147,7 @@ export default function FavoritesContent() {
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{item.title}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>

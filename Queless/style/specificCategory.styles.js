@@ -9,10 +9,9 @@ export default StyleSheet.create({
   },
 
   container: {
-    
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
-    paddingTop: 20,    // luft ned fra notch/header
+    paddingTop: 20, // luft ned fra notch/header
   },
 
   center: {
@@ -63,5 +62,30 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontWeight: '700',
+  },
+
+  /* --------------------------------------------- */
+  /* 🔍 NYE TILFØJEDE STYLES TIL SØGEFELTET */
+  /* --------------------------------------------- */
+
+  searchContainer: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+
+  searchInput: {
+    height: 44,
+    backgroundColor: colors.surface || '#f3f3f3',
+    borderRadius: 999,
+    paddingHorizontal: 16,
+    fontSize: 14,
+  },
+
+  emptyText: {
+    marginTop: 16,
+    marginBottom: 10,
+    fontSize: 14,
+    color: colors.muted || '#666',
+    textAlign: 'center',
   },
 });

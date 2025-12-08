@@ -14,7 +14,6 @@ import Friends from '../screens/Friends';
 import MyOutlets from '../screens/MyOutlets';
 import BrandDetail from '../screens/BrandDetail';
 
-
 // Ikoner
 import HomeIcon from '../assets/icons/Home.png';
 import HeartIcon from '../assets/icons/heart.png';
@@ -44,6 +43,18 @@ function HomeStackScreen() {
   );
 }
 
+// 🔹 mini-stack til Favoritter-tabben
+function FavoritesStackScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Første skærm i stacken er selve Favorit-siden */}
+      <Stack.Screen name="FavoritesMain" component={Favorites} />
+      {/* Samme BrandDetail som i HomeStack */}
+      <Stack.Screen name="BrandDetail" component={BrandDetail} />
+    </Stack.Navigator>
+  );
+}
+
 export default function NavigationBar() {
   return (
     <Tab.Navigator
@@ -66,7 +77,7 @@ export default function NavigationBar() {
       })}
     >
       <Tab.Screen name="Hjem" component={HomeStackScreen} />
-      <Tab.Screen name="Favoritter" component={Favorites} />
+      <Tab.Screen name="Favoritter" component={FavoritesStackScreen} />
       <Tab.Screen name="Tjek ind" component={CheckIn} />
       <Tab.Screen name="Venner" component={Friends} />
       <Tab.Screen name="Mine tider" component={MyOutlets} />

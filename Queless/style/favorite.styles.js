@@ -18,25 +18,6 @@ export default StyleSheet.create({
     paddingTop: spacing.sm,
   },
 
-  searchContainer: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-
-  searchInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    color: colors.text,
-    padding: 10,
-    borderRadius: 8,
-  },
-
-  emptyText: {
-    paddingVertical: 20,
-    color: colors.muted,
-  },
-
   card: {
     borderRadius: 20,
     overflow: 'hidden',
