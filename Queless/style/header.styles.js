@@ -7,26 +7,39 @@ export default StyleSheet.create({
     paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
 
-  leftRow: {
-    flexDirection: 'row',
+  side: {
+    width: 40,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+
+  sideRight: {
+    width: 40,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+
+  titleContainer: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
 
-  backButton: {
-    marginRight: 8,
+  // bruges når uppercase skal stå til venstre
+  titleContainerLeft: {
+    alignItems: 'flex-start',
   },
 
   title: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: '700',
-    textAlign: 'left',
+    textAlign: 'center',
   },
 
   titleUppercase: {
-    letterSpacing: 2, 
+    letterSpacing: 2,
     fontWeight: '900',
     fontSize: 32,
     textAlign: 'left',

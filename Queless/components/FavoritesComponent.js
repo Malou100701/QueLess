@@ -1,4 +1,4 @@
-// FavoritesComponent.js / FavoritesContent.js
+// components/FavoritesComponent.js / FavoritesContent.js
 // Josephine Holst-Christensen
 import React, { useState, useMemo, useEffect } from 'react';
 import {
@@ -15,9 +15,8 @@ import { rtdb, auth } from '../database/firebase';
 import { ref, onValue, set, remove } from 'firebase/database';
 import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/favorite.styles';
-import HeartOutline from '../assets/icons/heart-outline.png';
-import HeartFilled from '../assets/icons/heart-filled.png';
 import AppHeader from './AppHeaderComponent';
+import FavoriteToggleComponent from './FavoriteToggleComponent';
 
 export default function FavoritesContent() {
   const [allBrands, setAllBrands] = useState([]);
@@ -25,11 +24,11 @@ export default function FavoritesContent() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // 1) Hent alle brands
+  // Hent alle brands
   useEffect(() => {
     const brandsRef = ref(rtdb, 'brands');
 
-    const unsub = onValue(brandsRef, snapshot => {
+    const unsubscribe = onValue(brandsRef, snapshot => {
       const data = snapshot.val() || {};
       const list = Object.entries(data).map(([id, value]) => ({
         id,
@@ -39,10 +38,10 @@ export default function FavoritesContent() {
       setLoading(false);
     });
 
-    return () => unsub();
+    return () => unsubscribe();
   }, []);
 
-  // 2) Hent favoritter for nuværende bruger
+  // Hent favoritter for nuværende bruger
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -52,15 +51,15 @@ export default function FavoritesContent() {
 
     const favRef = ref(rtdb, `favorites/${user.uid}`);
 
-    const unsub = onValue(favRef, snapshot => {
-      const data = snapshot.val() || {}; // fx { bareen: true, billibi: true }
+    const unsubscribe = onValue(favRef, snapshot => {
+      const data = snapshot.val() || {};
       setFavoriteIds(data);
     });
 
-    return () => unsub();
+    return () => unsubscribe();
   }, []);
 
-  // 3) Toggle favorit
+  // Tilføj/fjern favorit i Firebase
   const toggleFavorite = (brandId) => {
     const user = auth.currentUser;
     if (!user) {
@@ -77,15 +76,15 @@ export default function FavoritesContent() {
     }
   };
 
-  // 4) Udregn favorit-liste + søgning
+  // Lav liste med kun favoritter + filtrér på søgetekst
   const filteredFavorites = useMemo(() => {
-    const favoritesOnly = allBrands.filter(b => !!favoriteIds[b.id]);
+    const favoritesOnly = allBrands.filter(brand => !!favoriteIds[brand.id]);
 
     const q = query.trim().toLowerCase();
     if (!q) return favoritesOnly;
 
-    return favoritesOnly.filter(b =>
-      String(b.title || '').toLowerCase().includes(q)
+    return favoritesOnly.filter(brand =>
+      String(brand.title || '').toLowerCase().includes(q)
     );
   }, [allBrands, favoriteIds, query]);
 
@@ -112,7 +111,7 @@ export default function FavoritesContent() {
         showLogout={true}
       />
 
-      {/* Søgefelt */}
+      {/* Søgefelt til at filtrere favoritter */}
       <View style={styles.searchContainer}>
         <TextInput
           placeholder="Søg i dine favoritter…"
@@ -126,7 +125,7 @@ export default function FavoritesContent() {
         />
       </View>
 
-      {/* Tom tekst hvis ingen resultater */}
+      {/* Tekst hvis der ikke er nogen favoritter eller ingen match */}
       {filteredFavorites.length === 0 && (
         <Text style={styles.emptyText}>
           {query
@@ -135,7 +134,6 @@ export default function FavoritesContent() {
         </Text>
       )}
 
-      {/* Kort-listen (samme kort-stil som før) */}
       <View style={styles.listContainer}>
         {filteredFavorites.map(item => {
           const imageSource = localImagesByKey[item.imageKey];
@@ -152,18 +150,13 @@ export default function FavoritesContent() {
               />
               <View style={styles.overlay} />
 
-              {/* ❤️ favorit-knap */}
-              <TouchableOpacity
-                style={styles.favoriteButton}
+              <FavoriteToggleComponent
+                isFavorite={isFavorite}
                 onPress={() => toggleFavorite(item.id)}
-              >
-                <Image
-                  source={isFavorite ? HeartFilled : HeartOutline}
-                  style={styles.favoriteIcon}
-                />
-              </TouchableOpacity>
+                buttonStyle={styles.favoriteButton}
+                iconStyle={styles.favoriteIcon}
+              />
 
-              {/* Titel i midten */}
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{item.title}</Text>
               </View>

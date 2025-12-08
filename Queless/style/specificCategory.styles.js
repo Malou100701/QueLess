@@ -9,6 +9,7 @@ export default StyleSheet.create({
   },
 
   container: {
+    
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     paddingTop: 20,    // luft ned fra notch/header
@@ -32,13 +33,6 @@ export default StyleSheet.create({
     width: 24,
     height: 24,
     marginRight: 12,
-  },
-
-  headerTitle: {
-    flex: 1,
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.text,
   },
 
   /* BRAND-CARDS */
@@ -69,20 +63,5 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontWeight: '700',
-  },
-  // favorit-knap
-  favoriteButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    width: 28,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  favoriteIcon: {
-    width: 18,
-    height: 18,
-    tintColor: '#fff' 
   },
 });

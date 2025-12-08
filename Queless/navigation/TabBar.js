@@ -7,11 +7,13 @@ import { colors } from '../style/theme';
 
 // Skærme
 import Home from '../screens/Home';
-import Category from '../screens/Category';
+import Category from '../screens/SpecificCategory';
 import CheckIn from '../screens/CheckIn';
 import Favorites from '../screens/Favorites';
 import Friends from '../screens/Friends';
 import MyOutlets from '../screens/MyOutlets';
+import BrandDetail from '../screens/BrandDetail';
+
 
 // Ikoner
 import HomeIcon from '../assets/icons/Home.png';
@@ -23,7 +25,6 @@ import QRIcon from '../assets/icons/QRcode.png';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-//  🔥 NØGLERNE SKAL MATCHE TAB-NAVNENE PRÆCIS 🔥
 const TAB_ICONS = {
   Hjem: HomeIcon,
   Favoritter: HeartIcon,
@@ -38,6 +39,7 @@ function HomeStackScreen() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeMain" component={Home} />
       <Stack.Screen name="Category" component={Category} />
+      <Stack.Screen name="BrandDetail" component={BrandDetail} />
     </Stack.Navigator>
   );
 }

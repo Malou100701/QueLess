@@ -1,57 +1,56 @@
-// components/AppHeader.js
+// components/AppHeaderComponent.js
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../style/header.styles';
-
 import BackIcon from '../assets/icons/back.png';
 import LogoutIcon from '../assets/icons/logout.png';
 
 export default function AppHeader({
   title,
-  showBack = false,    // kun true på sider som fx Category
-  showLogout = true,
-  uppercase = false,
+  uppercase,
+  showBack,
+  showLogout,
 }) {
   const navigation = useNavigation();
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
-  const handleLogout = () => {
-    navigation.getParent()?.navigate('Login') || navigation.navigate('Login');
-  };
-
-  const displayTitle = uppercase ? title.toUpperCase() : title;
+  const titleText = uppercase ? title?.toUpperCase() : title;
+  const isUppercase = !!uppercase;
 
   return (
     <View style={styles.container}>
-      {/* Venstre side: evt. back + titel */}
-      <View style={styles.leftRow}>
+      {/* venstre side – bredde 0 hvis der IKKE er back-knap */}
+      <View style={[styles.side, !showBack && { width: 0 }]}>
         {showBack && (
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={BackIcon} style={styles.icon} />
           </TouchableOpacity>
         )}
-
-        <Text
-          style={[
-            styles.title,
-            uppercase && styles.titleUppercase,
-          ]}
-          numberOfLines={1}
-        >
-          {displayTitle}
-        </Text>
       </View>
 
-      {/* Højre side: logout */}
-      {showLogout && (
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Image source={LogoutIcon} style={styles.icon} />
-        </TouchableOpacity>
-      )}
+      <View
+        style={[
+          styles.titleContainer,
+          isUppercase && styles.titleContainerLeft,
+        ]}
+      >
+        {!!titleText && (
+          <Text
+            style={isUppercase ? styles.titleUppercase : styles.title}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {titleText}
+          </Text>
+        )}
+      </View>
+
+      <View style={styles.sideRight}>
+        {showLogout && (
+          <TouchableOpacity onPress={() => console.log('logout')}>
+            <Image source={LogoutIcon} style={styles.icon} />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }
