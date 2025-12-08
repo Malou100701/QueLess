@@ -118,15 +118,25 @@ image: {
   },
 
   bookButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-    borderRadius: 999,
-  },
+  backgroundColor: '#4CAF50',
+  paddingVertical: 8,
+  paddingHorizontal: 18,
+  borderRadius: 999,
+},
 
-  bookButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 14,
-  },
+bookButtonText: {
+  color: '#fff',
+  fontWeight: '700',
+  fontSize: 14,
+},
+
+// 🔹 Når et slot er udsolgt
+bookButtonSoldOut: {
+  backgroundColor: '#D9534F', // rød farve
+},
+
+// 🔹 Når brugeren allerede har booket et slot for dette brand
+bookButtonAlreadyBooked: {
+  backgroundColor: '#9E9E9E', // grå farve
+},
 });
