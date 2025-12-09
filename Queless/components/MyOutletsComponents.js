@@ -13,11 +13,11 @@ import AppHeader from './AppHeaderComponent';
 import styles from '../style/myoutlets.styles';
 
 export default function MyOutletsContent() {
-  // starter som tom liste, så vi kan lave bookings.map uden problemer
+  // Liste med bookinger for den nuværende bruger
   const [bookings, setBookings] = useState([]);
 
-  // Hent alle bookinger for nuværende bruger
-  useEffect(() => {
+  // Henter alle bookinger for den bruger som er logget ind
+  useEffect(function () {
     const user = auth.currentUser;
 
     if (!user) {
@@ -25,38 +25,79 @@ export default function MyOutletsContent() {
       return;
     }
 
-    const bookingsRef = ref(rtdb, `myOutlets/${user.uid}`);
+    const bookingsRef = ref(rtdb, 'myOutlets/' + user.uid);
 
     const unsubscribe = onValue(
       bookingsRef,
-      snapshot => {
+      function (snapshot) {
         const data = snapshot.val() || {};
-        const list = Object.entries(data).map(([id, value]) => ({
-          id,
-          ...value,
-        }));
 
-        // Nyeste øverst
-        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        // Laver objektet om til en liste med id + data
+        const list = [];
+        const keys = Object.keys(data);
+        for (let i = 0; i < keys.length; i++) {
+          const id = keys[i];
+          const value = data[id];
+
+          list.push({
+            id: id,
+            ...value,
+          });
+        }
+
+        // Sortérer så de nyeste bookinger (højeste createdAt), så de kommer først
+        list.sort(function (a, b) {
+          const timeA = a.createdAt || 0;
+          const timeB = b.createdAt || 0;
+          return timeB - timeA;
+        });
 
         setBookings(list);
       },
-      error => {
+      function (error) {
         console.log('Fejl ved hentning af billetter:', error);
         setBookings([]);
       }
     );
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
-  // Annuller en booking: træk bookedCount ned og slet billetten
-  const handleCancelBooking = (booking) => {
+  // Annuller en booking:
+  // først så opdateres bookedCount i timeslottet,
+  // så slettes billetten under myOutlets/{userId}/{bookingId}
+  // --------------------------------------------------
+  async function cancelBookingInDatabase(userId, booking) {
+    // Reference til timeslottet for denne booking
+    const slotRef = ref(
+      rtdb,
+      'brands/' +
+      booking.brandId +
+      '/sales/' +
+      booking.saleId +
+      '/timeSlots/' +
+      booking.slotId
+    );
+
+    // Henter nuværende bookedCount
+    const slotSnap = await get(slotRef);
+    const slotData = slotSnap.val() || {};
+    const currentBooked = slotData.bookedCount ? slotData.bookedCount : 0;
+    const newBooked = currentBooked > 0 ? currentBooked - 1 : 0; // aldrig under 0
+
+    // Opdater bookedCount
+    await update(slotRef, { bookedCount: newBooked });
+
+    //Sletter billetten under myOutlets
+    const bookingRef = ref(
+      rtdb,
+      'myOutlets/' + userId + '/' + booking.id
+    );
+    await remove(bookingRef);
+  }
+
+  function handleCancelBooking(booking) {
     const user = auth.currentUser;
-    if (!user) {
-      // vi antager egentlig at man er logget ind, så vi gør bare ingenting her
-      return;
-    }
 
     Alert.alert(
       'Annuller booking',
@@ -66,30 +107,13 @@ export default function MyOutletsContent() {
         {
           text: 'Ja, annuller',
           style: 'destructive',
-          onPress: async () => {
+          onPress: async function () {
             try {
-              // 1) Reference til tidsrummet i brands
-              const slotRef = ref(
-                rtdb,
-                `brands/${booking.brandId}/sales/${booking.saleId}/timeSlots/${booking.slotId}`
+              await cancelBookingInDatabase(user.uid, booking);
+              Alert.alert(
+                'Booking annulleret',
+                'Din booking er nu annulleret.'
               );
-
-              const slotSnap = await get(slotRef);
-              const slotData = slotSnap.val() || {};
-              const currentBooked = slotData.bookedCount || 0;
-              const newBooked = currentBooked > 0 ? currentBooked - 1 : 0;
-
-              // Opdater bookedCount (men aldrig under 0)
-              await update(slotRef, { bookedCount: newBooked });
-
-              // 2) Slet selve billetten under myOutlets
-              const bookingRef = ref(
-                rtdb,
-                `myOutlets/${user.uid}/${booking.id}`
-              );
-              await remove(bookingRef);
-
-              Alert.alert('Booking annulleret', 'Din booking er nu annulleret.');
             } catch (err) {
               console.log('Fejl ved annullering:', err);
               Alert.alert(
@@ -101,7 +125,7 @@ export default function MyOutletsContent() {
         },
       ]
     );
-  };
+  }
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
@@ -117,38 +141,46 @@ export default function MyOutletsContent() {
         </Text>
       )}
 
-      <Text style={styles.sectionTitle}>Kommende</Text>
+      {bookings.length > 0 && (
+        <Text style={styles.sectionTitle}>Kommende</Text>
+      )}
 
-      {bookings.map(booking => (
-        <View key={booking.id} style={styles.card}>
-          <Text style={styles.brandTitle}>
-            {booking.brandTitle || 'Ukendt brand'}
-          </Text>
-
-          <Text style={styles.line}>
-            Dato: {booking.saleDate || '-'}
-          </Text>
-          <Text style={styles.line}>
-            Tid: {booking.slotStart} - {booking.slotEnd}
-          </Text>
-
-          {!!booking.saleLocation && (
-            <Text style={styles.line}>
-              Lokation: {booking.saleLocation}
+      {bookings.map(function (booking) {
+        return (
+          <View key={booking.id} style={styles.card}>
+            <Text style={styles.brandTitle}>
+              {booking.brandTitle || 'Ukendt brand'}
             </Text>
-          )}
 
-          {/* Annuller-knap */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => handleCancelBooking(booking)}
-            >
-              <Text style={styles.cancelButtonText}>Annuller booking</Text>
-            </TouchableOpacity>
+            <Text style={styles.line}>
+              Dato: {booking.saleDate || '-'}
+            </Text>
+
+            <Text style={styles.line}>
+              Tid: {booking.slotStart} - {booking.slotEnd}
+            </Text>
+
+            {booking.saleLocation ? (
+              <Text style={styles.line}>
+                Lokation: {booking.saleLocation}
+              </Text>
+            ) : null}
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={function () {
+                  handleCancelBooking(booking);
+                }}
+              >
+                <Text style={styles.cancelButtonText}>
+                  Annuller booking
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </ScrollView>
   );
 }
