@@ -91,7 +91,7 @@ image: {
     marginTop: spacing.md,
   },
 
-  // 🔹 HVIDE CARDS RUNDT OM TIDSSLIDERNE
+  //HVIDE CARDS RUNDT OM TIDSSLIDERNE
   slotCard: {
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -130,13 +130,13 @@ bookButtonText: {
   fontSize: 14,
 },
 
-// 🔹 Når et slot er udsolgt
+// Når et slot er udsolgt
 bookButtonSoldOut: {
-  backgroundColor: '#D9534F', // rød farve
+  backgroundColor: '#D9534F',
 },
 
-// 🔹 Når brugeren allerede har booket et slot for dette brand
+// Når brugeren allerede har booket et slot for dette brand
 bookButtonAlreadyBooked: {
-  backgroundColor: '#9E9E9E', // grå farve
+  backgroundColor: '#9E9E9E', 
 },
 });

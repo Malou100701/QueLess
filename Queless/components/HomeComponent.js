@@ -3,7 +3,6 @@ import styles from '../style/home.styles';
 import ImageSliderContent from './ImageSliderComponent';
 import CategoryComponent from './CategoryComponent';
 import AppHeader from './AppHeaderComponent';
-import { categories } from '../data/CategoryBundle';
 
 export default function HomeContent() {
 

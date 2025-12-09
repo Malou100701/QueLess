@@ -1,4 +1,3 @@
-// style/favorite.styles.js
 import { StyleSheet } from 'react-native';
 import { colors, spacing } from './theme';
 

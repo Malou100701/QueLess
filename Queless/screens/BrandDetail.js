@@ -1,4 +1,3 @@
-import React from 'react';
 import BrandDetailContent from '../components/BrandDetailComponent';
 
 export default function BrandDetail({ route }) {

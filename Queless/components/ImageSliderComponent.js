@@ -54,22 +54,33 @@ export default function ImageSliderContent() {
         return () => unsubscribe();
     }, []);
 
-    // Skift favorit-status for et brand - tilføj/fjern i Firebase
-    const toggleFavorite = (brandId) => {
+    // Skifter favorit-status for et brand
+      const toggleFavorite = (brandId) => {
         const user = auth.currentUser;
         if (!user) {
-            console.log('Ingen bruger logget ind');
-            return;
+          console.log('Ingen bruger logget ind – kan ikke ændre favoritter.');
+          return;
         }
+    
+        const favoriteRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
+    
+        // Opdater både Firebase og lokal state
+        setFavoriteIds(prev => {
+          const updated = { ...prev };
+    
+          if (updated[brandId]) {
+            // Hvis det allerede er favorit → fjern
+            remove(favoriteRef);
+            delete updated[brandId];
+          } else {
+            // Hvis det ikke er favorit → tilføj
+            set(favoriteRef, true);
+            updated[brandId] = true;
+          }
+          return updated;
+        });
+      };
 
-        const favRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
-
-        if (favoriteIds && favoriteIds[brandId]) {
-            remove(favRef);
-        } else {
-            set(favRef, true);
-        }
-    };
 
     return (
         <View style={styles.sliderContainer}>

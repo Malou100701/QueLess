@@ -1,37 +1,18 @@
-// style/categoryScreen.styles.js
 import { StyleSheet } from 'react-native';
 import { colors, spacing } from './theme';
 
 export default StyleSheet.create({
+  // Yderste ScrollView
   page: {
     flex: 1,
     backgroundColor: colors.background,
   },
 
+  // Indholdet inde i siden
   container: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
-    paddingTop: 20, // luft ned fra notch/header
-  },
-
-  center: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  /* HEADER */
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-
-  backIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
+    paddingTop: 20,
   },
 
   /* BRAND-CARDS */
@@ -48,11 +29,13 @@ export default StyleSheet.create({
   },
 
   overlay: {
+    // Fylder hele kortet og lægger et mørkt lag over billedet
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.35)',
   },
 
   titleContainer: {
+    // Placerer titel-teksten centreret oven på billedet
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
@@ -64,15 +47,13 @@ export default StyleSheet.create({
     fontWeight: '700',
   },
 
-  /* --------------------------------------------- */
-  /* 🔍 NYE TILFØJEDE STYLES TIL SØGEFELTET */
-  /* --------------------------------------------- */
-
+  // Søgefeltets wrapper
   searchContainer: {
     marginTop: 10,
     marginBottom: 20,
   },
 
+  // Selve søgefeltet
   searchInput: {
     height: 44,
     backgroundColor: colors.surface || '#f3f3f3',
@@ -81,6 +62,7 @@ export default StyleSheet.create({
     fontSize: 14,
   },
 
+  // Tekst til “ingen brands” / “ingen søgeresultater”
   emptyText: {
     marginTop: 16,
     marginBottom: 10,

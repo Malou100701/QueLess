@@ -1,16 +1,14 @@
-// components/SpecificCategoryComponent.js
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   Image,
   ScrollView,
-  ActivityIndicator,
   TouchableOpacity,
   TextInput,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { ref, onValue, set, remove } from 'firebase/database';
+import { ref, get, set, remove, onValue } from 'firebase/database';
 import { rtdb, auth } from '../database/firebase';
 import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/specificCategory.styles';
@@ -23,152 +21,109 @@ export default function SpecificCategoryComponent() {
   const navigation = useNavigation();
   const { categoryId, categoryTitle } = route.params;
 
-  const [brandsInCategory, setBrandsInCategory] = useState(null);
-  const [favoriteBrandIds, setFavoriteBrandIds] = useState({});
-  const [searchQuery, setSearchQuery] = useState(''); // 🔹 ny state til søgning
+  // Liste med brands i den valgte kategori
+  const [brandsInCategory, setBrandsInCategory] = useState([]);
 
-  // --------------------------------------------------------
-  // Hent brands i den valgte kategori
-  // --------------------------------------------------------
+  // Favorit-brand-id'er for den nuværende bruger (fx { brandId1: true, brandId2: true })
+  const [favoriteIds, setFavoriteIds] = useState({});
+
+  // Søgetekst
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Hent brands i den valgte kategori (én gang)
   useEffect(() => {
-    const brandsReference = ref(rtdb, 'brands');
+    const fetchBrands = async () => {
+      try {
+        const brandsRef = ref(rtdb, 'brands');
+        const snapshot = await get(brandsRef);
+        const data = snapshot.val() || {};
 
-    const unsubscribeBrands = onValue(
-      brandsReference,
-      snapshot => {
-        const dataFromDatabase = snapshot.val() || {};
+        // Laver objektet om til en liste
+        const allBrands = Object.entries(data).map(([id, value]) => ({
+          id,
+          ...value,
+        }));
 
-        const allBrandsList = Object.entries(dataFromDatabase).map(
-          ([brandIdFromDatabase, brandData]) => ({
-            id: brandIdFromDatabase,
-            ...brandData,
-          })
-        );
+        const selectedCategoryId = String(categoryId).toLowerCase();
 
-        const selectedCategoryIdLowercase = String(categoryId).toLowerCase();
-
-        const filteredBrands = allBrandsList.filter(brand => {
+        // Filtrér brands så vi kun tager dem, der matcher categoryId
+        const filtered = allBrands.filter(brand => {
           const categoryValue = brand.category;
           if (!categoryValue) return false;
 
           if (typeof categoryValue === 'string') {
-            return (
-              categoryValue.trim().toLowerCase() ===
-              selectedCategoryIdLowercase
-            );
+            return categoryValue.trim().toLowerCase() === selectedCategoryId;
           }
 
           if (typeof categoryValue === 'object') {
-            const categoryValuesAsLowercaseStrings = Object.values(
-              categoryValue
-            ).map(singleCategoryValue =>
-              String(singleCategoryValue).trim().toLowerCase()
+            const values = Object.values(categoryValue).map(value =>
+              String(value).trim().toLowerCase()
             );
-
-            return categoryValuesAsLowercaseStrings.includes(
-              selectedCategoryIdLowercase
-            );
+            return values.includes(selectedCategoryId);
           }
 
           return false;
         });
 
-        setBrandsInCategory(filteredBrands);
-      },
-      error => {
-        console.log('Firebase fejl ved hentning af brands:', error);
+        setBrandsInCategory(filtered);
+      } catch (error) {
+        console.log('Fejl ved hentning af brands:', error);
         setBrandsInCategory([]);
       }
-    );
+    };
 
-    return () => unsubscribeBrands();
+    fetchBrands();
   }, [categoryId]);
 
-  // --------------------------------------------------------
-  // Hent favoritter for den bruger, som er logget ind
-  // --------------------------------------------------------
+  // Hent og lyt på favoritter for nuværende bruger (realtid)
   useEffect(() => {
-    const currentUser = auth.currentUser;
-    if (!currentUser) return;
+    const user = auth.currentUser;
+    if (!user) {
+      setFavoriteIds({});
+      return;
+    }
 
-    const favoritesReference = ref(rtdb, `favorites/${currentUser.uid}`);
+    const favoritesRef = ref(rtdb, `favorites/${user.uid}`);
 
-    const unsubscribeFavorites = onValue(favoritesReference, snapshot => {
-      const favoritesFromDatabase = snapshot.val() || {};
-      setFavoriteBrandIds(favoritesFromDatabase);
+    // onValue = lyt til ændringer i favorites/{user.uid}
+    const unsubscribe = onValue(favoritesRef, snapshot => {
+      const data = snapshot.val() || {};
+      setFavoriteIds(data); // UI opdateres hver gang der sker noget i databasen
     });
 
-    return () => unsubscribeFavorites();
+    return unsubscribe;
   }, []);
 
-  // --------------------------------------------------------
-  // Skift favorit-status for et bestemt brand
-  // --------------------------------------------------------
-  const toggleFavoriteForBrand = (brandId) => {
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
+  // Skift favorit-status for et brand
+  const toggleFavorite = (brandId) => {
+    const user = auth.currentUser;
+    if (!user) {
       console.log('Ingen bruger logget ind – kan ikke ændre favoritter.');
       return;
     }
 
-    const singleFavoriteReference = ref(
-      rtdb,
-      `favorites/${currentUser.uid}/${brandId}`
-    );
+    const favoriteRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
 
-    if (favoriteBrandIds && favoriteBrandIds[brandId]) {
-      // Brandet er favorit → fjern det
-      remove(singleFavoriteReference);
+    // Her opdaterer vi kun Firebase.
+    // favoriteIds bliver automatisk opdateret via onValue-listeneren.
+    if (favoriteIds[brandId]) {
+      // Hvis det allerede er favorit → fjern
+      remove(favoriteRef);
     } else {
-      // Brandet er ikke favorit → tilføj det
-      set(singleFavoriteReference, true);
+      // Hvis det ikke er favorit → tilføj
+      set(favoriteRef, true);
     }
   };
 
-  // 🔹 Filtrér brands i kategorien ud fra søgetekst (titel)
-  const filteredBrandsInCategory = useMemo(() => {
-    if (!brandsInCategory) return [];
+  // Filtrér brands i kategorien efter søgetekst
+  const filteredBrands = brandsInCategory.filter(brand => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true; // ingen søgetekst → vis alle
 
-    const trimmedQuery = searchQuery.trim().toLowerCase();
-    if (!trimmedQuery) return brandsInCategory;
+    const title = String(brand.title || '').toLowerCase();
+    return title.includes(query);
+  });
 
-    return brandsInCategory.filter(brand =>
-      String(brand.title || '').toLowerCase().includes(trimmedQuery)
-    );
-  }, [brandsInCategory, searchQuery]);
-
-  // --------------------------------------------------------
-  // Loader mens vi henter brands
-  // --------------------------------------------------------
-  if (!brandsInCategory) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  // --------------------------------------------------------
-  // Hvis der ikke er nogen brands i denne kategori
-  // --------------------------------------------------------
-  if (brandsInCategory.length === 0) {
-    return (
-      <ScrollView style={styles.page} contentContainerStyle={styles.container}>
-        <AppHeader
-          title={categoryTitle}
-          showBack={true}
-          showLogout={true}
-        />
-
-        <Text>Der er ingen brands i denne kategori endnu.</Text>
-      </ScrollView>
-    );
-  }
-
-  // --------------------------------------------------------
-  // Normal visning: vis alle brands i kategorien
-  // --------------------------------------------------------
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
       <AppHeader
@@ -177,7 +132,7 @@ export default function SpecificCategoryComponent() {
         showLogout={true}
       />
 
-      {/* 🔹 Søgefelt – magen til det i Favorites, bare for kategori */}
+      {/* Søgefelt til at søge i brand-titler */}
       <View style={styles.searchContainer}>
         <TextInput
           placeholder="Søg i denne kategori…"
@@ -191,28 +146,34 @@ export default function SpecificCategoryComponent() {
         />
       </View>
 
-      {/* 🔹 Tekst hvis søgningen ingen resultater giver */}
-      {filteredBrandsInCategory.length === 0 && (
+      {/* Tekst hvis der ingen brands er */}
+      {brandsInCategory.length === 0 && (
+        <Text style={styles.emptyText}>
+          Der er ingen brands i denne kategori endnu.
+        </Text>
+      )}
+
+      {/* Tekst hvis søgningen ikke matcher noget */}
+      {brandsInCategory.length > 0 && filteredBrands.length === 0 && (
         <Text style={styles.emptyText}>
           Ingen brands matcher din søgning.
         </Text>
       )}
 
-      {filteredBrandsInCategory.map(brandItem => {
-        const imageSource = localImagesByKey[brandItem.imageKey];
+      {filteredBrands.map(brand => {
+        const imageSource = localImagesByKey[brand.imageKey];
         if (!imageSource) return null;
 
-        const isFavoriteForCurrentUser =
-          !!(favoriteBrandIds && favoriteBrandIds[brandItem.id]);
+        const isFavorite = !!favoriteIds[brand.id];
 
         return (
           <TouchableOpacity
-            key={brandItem.id}
+            key={brand.id}
             style={styles.card}
             activeOpacity={0.8}
             onPress={() =>
               navigation.navigate('BrandDetail', {
-                brandId: brandItem.id,
+                brandId: brand.id,
               })
             }
           >
@@ -223,17 +184,13 @@ export default function SpecificCategoryComponent() {
             />
             <View style={styles.overlay} />
 
-            {/* 🔹 Her bruger vi nu vores FavoriteToggleComponent */}
             <FavoriteToggleComponent
-              isFavorite={isFavoriteForCurrentUser}
-              onPress={() => toggleFavoriteForBrand(brandItem.id)}
-              buttonStyle={styles.favoriteButton}
-              iconStyle={styles.favoriteIcon}
+              isFavorite={isFavorite}
+              onPress={() => toggleFavorite(brand.id)}
             />
 
-            {/* Brandets titel */}
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>{brandItem.title}</Text>
+              <Text style={styles.title}>{brand.title}</Text>
             </View>
           </TouchableOpacity>
         );

@@ -1,4 +1,3 @@
-// components/FavoriteToggleComponent.js
 import { TouchableOpacity, Image } from 'react-native';
 import HeartOutline from '../assets/icons/heart-outline.png';
 import HeartFilled from '../assets/icons/heart-filled.png';

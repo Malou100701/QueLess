@@ -6,21 +6,22 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import { rtdb, auth } from '../database/firebase';
+import { useNavigation } from '@react-navigation/native';
 import { ref, onValue, set, remove } from 'firebase/database';
+import { rtdb, auth } from '../database/firebase';
 import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/favorite.styles';
 import AppHeader from './AppHeaderComponent';
 import FavoriteToggleComponent from './FavoriteToggleComponent';
-import { useNavigation } from '@react-navigation/native';
 
 export default function FavoritesContent() {
-  const [allBrands, setAllBrands] = useState([]);
-  const [favoriteIds, setFavoriteIds] = useState({});
+  const [brands, setBrands] = useState([]);          // alle brands fra "brands"
+  const [favoriteIds, setFavoriteIds] = useState({}); 
 
   const navigation = useNavigation();
 
-  // Hent alle brands
+ 
+  // Henter alle brands fra databasen (node: "brands")
   useEffect(() => {
     const brandsRef = ref(rtdb, 'brands');
 
@@ -30,13 +31,15 @@ export default function FavoritesContent() {
         id,
         ...value,
       }));
-      setAllBrands(list);
+      setBrands(list);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Henter favoritter for bruger der er logget ind
+  
+  // Henter ALLE favoritter for den aktuelle bruger
+  // fra "favorites/{userId}"
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -44,35 +47,46 @@ export default function FavoritesContent() {
       return;
     }
 
-    const favRef = ref(rtdb, `favorites/${user.uid}`);
+    // Her læser vi hele "mappen" med brugerens favoritter:
+    const userFavoritesRef = ref(rtdb, `favorites/${user.uid}`);
 
-    const unsubscribe = onValue(favRef, snapshot => {
+    onValue(userFavoritesRef, snapshot => {
       const data = snapshot.val() || {};
       setFavoriteIds(data);
     });
-
-    return () => unsubscribe();
   }, []);
 
-  // Tilføj/fjern favorit i Firebase
-  const toggleFavorite = (brandId) => {
+  
+const toggleFavorite = (brandId) => {
     const user = auth.currentUser;
     if (!user) {
-      console.log('Ingen bruger logget ind');
+      console.log('Ingen bruger logget ind – kan ikke ændre favoritter.');
       return;
     }
 
-    const favRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
+    const favoriteRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
 
-    if (favoriteIds && favoriteIds[brandId]) {
-      remove(favRef);
-    } else {
-      set(favRef, true);
-    }
+    // Opdater både Firebase og lokal state
+    setFavoriteIds(prev => {
+      const updated = { ...prev };
+
+      if (updated[brandId]) {
+        // Hvis det allerede er favorit → fjern
+        remove(favoriteRef);
+        delete updated[brandId];
+      } else {
+        // Hvis det ikke er favorit → tilføj
+        set(favoriteRef, true);
+        updated[brandId] = true;
+      }
+
+      return updated;
+    });
   };
 
-  // Kun brands der er favoritter
-  const favoritesOnly = allBrands.filter(brand => !!favoriteIds[brand.id]);
+
+  // Kun brands, som ligger i favorit-listen
+  const favoriteBrands = brands.filter(brand => !!favoriteIds[brand.id]);
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
@@ -83,27 +97,27 @@ export default function FavoritesContent() {
       />
 
       {/* Hvis der ingen favoritter er */}
-      {favoritesOnly.length === 0 && (
+      {favoriteBrands.length === 0 && (
         <Text style={styles.emptyText}>
           Du har ingen favoritter endnu.
         </Text>
       )}
 
       <View style={styles.listContainer}>
-        {favoritesOnly.map(item => {
-          const imageSource = localImagesByKey[item.imageKey];
+        {favoriteBrands.map(brand => {
+          const imageSource = localImagesByKey[brand.imageKey];
           if (!imageSource) return null;
 
-          const isFavorite = !!favoriteIds[item.id];
+          const isFavorite = !!favoriteIds[brand.id];
 
           return (
             <TouchableOpacity
-              key={item.id}
+              key={brand.id}
               style={styles.card}
               activeOpacity={0.8}
               onPress={() =>
                 navigation.navigate('BrandDetail', {
-                  brandId: item.id,
+                  brandId: brand.id,
                 })
               }
             >
@@ -116,13 +130,11 @@ export default function FavoritesContent() {
 
               <FavoriteToggleComponent
                 isFavorite={isFavorite}
-                onPress={() => toggleFavorite(item.id)}
-                buttonStyle={styles.favoriteButton}
-                iconStyle={styles.favoriteIcon}
+                onPress={() => toggleFavorite(brand.id)}
               />
 
               <View style={styles.titleContainer}>
-                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>{brand.title}</Text>
               </View>
             </TouchableOpacity>
           );

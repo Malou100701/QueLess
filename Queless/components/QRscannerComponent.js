@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text } from 'react-native';
+import {ScrollView, Text } from 'react-native';
 import styles from '../style/home.styles'; 
 
 export default function QRscannerContent() {

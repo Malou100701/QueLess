@@ -1,5 +1,3 @@
-// Malou Bjørnholt
-import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import styles from '../style/friends.styles';
 import AppHeader from './AppHeaderComponent';

@@ -1,4 +1,3 @@
-// Malou Bjørnholt 
 import * as React from 'react';
 import LoginForm from '../components/login';
 

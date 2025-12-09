@@ -1,5 +1,4 @@
-// Malou Bjørnholt
-import { ScrollView, Text } from 'react-native';
+import { ScrollView} from 'react-native';
 import styles from '../style/home.styles';
 import AppHeader from './AppHeaderComponent';
 

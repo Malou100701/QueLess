@@ -17,7 +17,7 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
+    marginTop: spacing.md,
   },
 
   comingSoon: {

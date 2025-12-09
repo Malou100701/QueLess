@@ -4,7 +4,6 @@ import {
   View,
   Text,
   ScrollView,
-  ActivityIndicator,
   TouchableOpacity,
   Alert,
 } from 'react-native';
@@ -12,11 +11,10 @@ import { ref, onValue, get, update, remove } from 'firebase/database';
 import { auth, rtdb } from '../database/firebase';
 import AppHeader from './AppHeaderComponent';
 import styles from '../style/myoutlets.styles';
-import { colors } from '../style/theme';
 
 export default function MyOutletsContent() {
-  const [bookings, setBookings] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // starter som tom liste, så vi kan lave bookings.map uden problemer
+  const [bookings, setBookings] = useState([]);
 
   // Hent alle bookinger for nuværende bruger
   useEffect(() => {
@@ -24,7 +22,6 @@ export default function MyOutletsContent() {
 
     if (!user) {
       setBookings([]);
-      setLoading(false);
       return;
     }
 
@@ -43,23 +40,21 @@ export default function MyOutletsContent() {
         list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
         setBookings(list);
-        setLoading(false);
       },
       error => {
         console.log('Fejl ved hentning af billetter:', error);
         setBookings([]);
-        setLoading(false);
       }
     );
 
     return () => unsubscribe();
   }, []);
 
-  // 🔹 Annuller en booking: træk bookedCount ned og slet billetten
+  // Annuller en booking: træk bookedCount ned og slet billetten
   const handleCancelBooking = (booking) => {
     const user = auth.currentUser;
     if (!user) {
-      Alert.alert('Log ind', 'Du skal være logget ind for at annullere en booking.');
+      // vi antager egentlig at man er logget ind, så vi gør bare ingenting her
       return;
     }
 
@@ -108,22 +103,6 @@ export default function MyOutletsContent() {
     );
   };
 
-  // Loader-state
-  if (loading || bookings === null) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.background,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
       <AppHeader
@@ -137,6 +116,8 @@ export default function MyOutletsContent() {
           Du har ingen bookede tider endnu.
         </Text>
       )}
+
+      <Text style={styles.sectionTitle}>Kommende</Text>
 
       {bookings.map(booking => (
         <View key={booking.id} style={styles.card}>
@@ -157,7 +138,7 @@ export default function MyOutletsContent() {
             </Text>
           )}
 
-          {/* 🔹 Annuller-knap */}
+          {/* Annuller-knap */}
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.cancelButton}

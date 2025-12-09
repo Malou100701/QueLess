@@ -1,4 +1,3 @@
-// Josephine Holst-Christensen
 import * as React from 'react';
 import LoginForm from '../components/LoginBusinessComponent';
 
