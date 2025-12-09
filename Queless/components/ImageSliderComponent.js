@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Image,
-  ScrollView,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
+    View,
+    Image,
+    ScrollView,
+    Text,
+    TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ref, onValue, set, remove } from 'firebase/database';
@@ -15,117 +14,111 @@ import styles, { CARD_WIDTH, CARD_SPACING } from './../style/imageSlider.styles'
 import FavoriteToggleComponent from './FavoriteToggleComponent';
 
 export default function ImageSliderContent() {
-  const [brands, setBrands] = useState(null);
-  const [favoriteIds, setFavoriteIds] = useState({});
-  const navigation = useNavigation();
+    const [brands, setBrands] = useState([]);
+    const [favoriteIds, setFavoriteIds] = useState({});
+    const navigation = useNavigation();
 
-  // Hent alle brands
-  useEffect(() => {
-    const brandsRef = ref(rtdb, 'brands');
+    // Henter alle brands fra firebase
+    useEffect(() => {
+        const brandsRef = ref(rtdb, 'brands');
 
-    const unsubscribe = onValue(brandsRef, snapshot => {
-      const data = snapshot.val() || {};
+        const unsubscribe = onValue(brandsRef, snapshot => {
+            const data = snapshot.val() || {};
 
-      const list = Object.entries(data).map(([id, value]) => ({
-        id,
-        ...value,
-      }));
+            const list = Object.entries(data).map(([id, value]) => ({
+                id,
+                ...value,
+            }));
 
-      setBrands(list);
-    });
+            setBrands(list);
+        });
 
-    return () => unsubscribe();
-  }, []);
+        return () => unsubscribe();
+    }, []);
 
-  // Hent favoritter for nuværende bruger
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) {
-      setFavoriteIds({});
-      return;
-    }
+    // Hent favoritter for nuværende bruger - så det kan ses på slide kortene
+    useEffect(() => {
+        const user = auth.currentUser;
+        if (!user) {
+            setFavoriteIds({});
+            return;
+        }
 
-    const favRef = ref(rtdb, `favorites/${user.uid}`);
+        const favRef = ref(rtdb, `favorites/${user.uid}`);
 
-    const unsubscribe = onValue(favRef, snapshot => {
-      const data = snapshot.val() || {};
-      setFavoriteIds(data);
-    });
+        const unsubscribe = onValue(favRef, snapshot => {
+            const data = snapshot.val() || {};
+            setFavoriteIds(data);
+        });
 
-    return () => unsubscribe();
-  }, []);
+        return () => unsubscribe();
+    }, []);
 
-  // Skift favorit-status for et brand
-  const toggleFavorite = (brandId) => {
-    const user = auth.currentUser;
-    if (!user) {
-      console.log('Ingen bruger logget ind');
-      return;
-    }
+    // Skift favorit-status for et brand - tilføj/fjern i Firebase
+    const toggleFavorite = (brandId) => {
+        const user = auth.currentUser;
+        if (!user) {
+            console.log('Ingen bruger logget ind');
+            return;
+        }
 
-    const favRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
+        const favRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
 
-    if (favoriteIds && favoriteIds[brandId]) {
-      remove(favRef);
-    } else {
-      set(favRef, true);
-    }
-  };
+        if (favoriteIds && favoriteIds[brandId]) {
+            remove(favRef);
+        } else {
+            set(favRef, true);
+        }
+    };
 
-  if (!brands) {
     return (
-      <View style={[styles.sliderContainer, { alignItems: 'center', marginTop: 24 }]}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.sliderContainer}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        decelerationRate="fast"
-        snapToInterval={CARD_WIDTH + CARD_SPACING}
-        snapToAlignment="start"
-        contentContainerStyle={styles.scrollContent}
-      >
-        {brands.map(item => {
-          const imageSource = localImagesByKey[item.imageKey];
-          if (!imageSource) return null;
-
-          const isFavorite = !!favoriteIds[item.id];
-
-          return (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              activeOpacity={0.8}
-              onPress={() => navigation.navigate('BrandDetail', { brandId: item.id })}
+        <View style={styles.sliderContainer}>
+            <ScrollView
+                horizontal // Gør ScrollView vandret i stedet for lodret (slider til siden)
+                showsHorizontalScrollIndicator={false} // Skjuler den lille grå scroll-bar under slideren
+                decelerationRate="fast" // Hastigheden ved scroll
+                snapToInterval={CARD_WIDTH + CARD_SPACING} // Hvor langt der skal scrolles for hvert "snap"
+                snapToAlignment="start"
+                contentContainerStyle={styles.scrollContent} // Indre styling til ScrollView-indholdet
             >
-              <Image
-                source={imageSource}
-                style={styles.image}
-                resizeMode="cover"
-              />
+                {brands.map(item => {
+                    const imageSource = localImagesByKey[item.imageKey];
+                    if (!imageSource) return null;
 
-              <View style={styles.overlay} />
+                    const isFavorite = !!favoriteIds[item.id];
 
-              {/* favorit-hjerte */}
-              <FavoriteToggleComponent
-                isFavorite={isFavorite}
-                onPress={() => toggleFavorite(item.id)}
-                buttonStyle={styles.favoriteButton}
-                iconStyle={styles.favoriteIcon}
-              />
+                    return (
+                        <TouchableOpacity
+                            key={item.id}
+                            style={styles.card}
+                            activeOpacity={0.8}
+                            onPress={() =>
+                                navigation.navigate('BrandDetail', { brandId: item.id })
+                            }
+                        >
+                            <Image
+                                source={imageSource}
+                                style={styles.image}
+                                resizeMode="cover"
+                            />
 
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{item.title}</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-    </View>
-  );
+                            {/* mørkt overlay over billedet */}
+                            <View style={styles.overlay} />
+
+                            {/* FavoriteToggleComponent er en genanvendelig komponent til favorit-hjertet.*/}
+                            <FavoriteToggleComponent 
+                                isFavorite={isFavorite}
+                                onPress={() => toggleFavorite(item.id)}
+                            />
+
+                            {/* titel i midten af kortet */}
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.title}>{item.title}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
+            </ScrollView>
+        </View >
+    );
 }

@@ -2,10 +2,10 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-    bg: { flex: 1 },                        // bruges på <ImageBackground>
+    bg: { flex: 1 },                     
     container: {
         flex: 1,
-        justifyContent: 'flex-start',// ← læg indholdet øverst
+        justifyContent: 'flex-start',
         paddingTop: 150,
     },
 

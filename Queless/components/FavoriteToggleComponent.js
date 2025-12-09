@@ -4,23 +4,18 @@ import HeartOutline from '../assets/icons/heart-outline.png';
 import HeartFilled from '../assets/icons/heart-filled.png';
 import styles from '../style/favoriteToggle.styles';
 
-export default function FavoriteToggleComponent({
-  isFavorite,
-  onPress,
-  buttonStyle,
-  iconStyle,
-}) {
+export default function FavoriteToggleComponent({ isFavorite, onPress }) {
   const iconSource = isFavorite ? HeartFilled : HeartOutline;
 
   return (
     <TouchableOpacity
-      style={[styles.favoriteButton]}  
+      style={styles.favoriteButton}
       onPress={onPress}
       activeOpacity={0.8}
     >
       <Image
         source={iconSource}
-        style={[styles.favoriteIcon]}    
+        style={styles.favoriteIcon}
       />
     </TouchableOpacity>
   );

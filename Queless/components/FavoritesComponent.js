@@ -1,29 +1,24 @@
-// components/FavoritesComponent.js / FavoritesContent.js
-// Josephine Holst-Christensen
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Image,
-  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import { colors } from '../style/theme';
 import { rtdb, auth } from '../database/firebase';
 import { ref, onValue, set, remove } from 'firebase/database';
 import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/favorite.styles';
 import AppHeader from './AppHeaderComponent';
 import FavoriteToggleComponent from './FavoriteToggleComponent';
-import { useNavigation } from '@react-navigation/native';   // 🔹 tilføjet
+import { useNavigation } from '@react-navigation/native';
 
 export default function FavoritesContent() {
   const [allBrands, setAllBrands] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState({});
-  const [loading, setLoading] = useState(true);
 
-  const navigation = useNavigation(); // 🔹 nu kan vi navigere
+  const navigation = useNavigation();
 
   // Hent alle brands
   useEffect(() => {
@@ -36,13 +31,12 @@ export default function FavoritesContent() {
         ...value,
       }));
       setAllBrands(list);
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Hent favoritter for nuværende bruger
+  // Henter favoritter for bruger der er logget ind
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -77,21 +71,6 @@ export default function FavoritesContent() {
     }
   };
 
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.background,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
   // Kun brands der er favoritter
   const favoritesOnly = allBrands.filter(brand => !!favoriteIds[brand.id]);
 
@@ -122,8 +101,6 @@ export default function FavoritesContent() {
               key={item.id}
               style={styles.card}
               activeOpacity={0.8}
-
-              // 🔹 HER TILFØJER VI BRANDDETAIL NAVIGATIONEN
               onPress={() =>
                 navigation.navigate('BrandDetail', {
                   brandId: item.id,

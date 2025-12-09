@@ -1,3 +1,4 @@
+//denne side bruges til at vise kategorierne på forsiden - den tages fat i i home komponenten, hvor den vises. 
 import { StyleSheet } from 'react-native';
 import { colors, spacing } from './theme';
 
