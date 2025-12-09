@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import styles from '../style/brandmap.styles';
 
+// Beregner afstand i km mellem to koordinater
 function calculateDistanceInKilometers(
   startLatitude,
   startLongitude,
@@ -47,20 +48,22 @@ export default function BrandMapComponent({
   // Fejltekst hvis lokation ikke kan hentes
   const [locationErrorMessage, setLocationErrorMessage] = useState(null);
 
-  // Hvis brandet ikke har koordinater, viser vi ikke kortet
-  if (latitude == null || longitude == null) return null;
+  // Hvis brandet ikke har koordinater, viser vi slet ikke kortet
+  if (latitude == null || longitude == null) {
+    return null;
+  }
 
-  // Sørg for at koordinaterne er tal
+  // Sørger for at koordinaterne er tal
   const brandLatitude = parseFloat(latitude);
   const brandLongitude = parseFloat(longitude);
 
-  // Hent brugerens lokation, når komponenten vises
+  // Henter brugerens lokation, når komponenten vises
   useEffect(() => {
     async function fetchUserLocation() {
       try {
-        // Spørg om lov til at bruge lokation
-        const { status } =
-          await Location.requestForegroundPermissionsAsync();
+        // Spørger om lov til at bruge lokation
+        const result = await Location.requestForegroundPermissionsAsync();
+        const status = result.status;
 
         if (status !== 'granted') {
           setLocationErrorMessage('Tilladelse til lokation blev ikke givet.');
@@ -68,7 +71,7 @@ export default function BrandMapComponent({
           return;
         }
 
-        // Hent nuværende position
+        // Henter nuværende position
         const position = await Location.getCurrentPositionAsync({});
 
         setUserLocation({
@@ -85,7 +88,7 @@ export default function BrandMapComponent({
     fetchUserLocation();
   }, []);
 
-  // Hvor kortet skal være centreret (brandets placering)
+  // Kortet centreres omkring brandets placering
   const initialMapRegion = {
     latitude: brandLatitude,
     longitude: brandLongitude,
@@ -93,9 +96,10 @@ export default function BrandMapComponent({
     longitudeDelta: 0.01,
   };
 
-  // Tekst som "Ca. 450 m fra dig" eller "Ca. 2.3 km fra dig"
+  // Teksten om afstand / fejlbesked under kortet
   let distanceText = null;
 
+  // Hvis vi har brugerens lokation, så udregn afstand
   if (userLocation) {
     const distanceInKilometers = calculateDistanceInKilometers(
       userLocation.latitude,
@@ -104,12 +108,29 @@ export default function BrandMapComponent({
       brandLongitude
     );
 
-    const formattedDistance =
-      distanceInKilometers < 1
-        ? `${Math.round(distanceInKilometers * 1000)} m`
-        : `${distanceInKilometers.toFixed(1)} km`;
+    let formattedDistance;
 
-    distanceText = `Ca. ${formattedDistance} fra dig`;
+    // Under 1 km → vis meter
+    if (distanceInKilometers < 1) {
+      const meters = Math.round(distanceInKilometers * 1000);
+      formattedDistance = meters + ' m';
+    } else {
+      formattedDistance = distanceInKilometers.toFixed(1) + ' km';
+    }
+
+    distanceText = 'Ca. ' + formattedDistance + ' fra dig';
+  }
+
+  // Vælger hvilken tekst vi viser under kortet (afstand eller fejl)
+  let distanceLine = null;
+  if (locationErrorMessage) {
+    distanceLine = (
+      <Text style={styles.infoDistance}>{locationErrorMessage}</Text>
+    );
+  } else if (distanceText) {
+    distanceLine = (
+      <Text style={styles.infoDistance}>{distanceText}</Text>
+    );
   }
 
   return (
@@ -141,14 +162,8 @@ export default function BrandMapComponent({
       <View style={styles.infoContainer}>
         {address && <Text style={styles.infoAddress}>{address}</Text>}
 
-        {/* Vis enten afstand eller fejlbesked */}
-        {distanceText && !locationErrorMessage && (
-          <Text style={styles.infoDistance}>{distanceText}</Text>
-        )}
-
-        {locationErrorMessage && (
-          <Text style={styles.infoDistance}>{locationErrorMessage}</Text>
-        )}
+        {/* Enten afstand eller fejl-besked */}
+        {distanceLine}
       </View>
     </View>
   );
