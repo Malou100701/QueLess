@@ -1,5 +1,4 @@
-// components/CategoryComponent.js
-import React from 'react';
+//denne side bruges til at vise kategorierne på forsiden - den tages fat i i home komponenten, hvor den vises. 
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { categories } from '../data/CategoryBundle';
@@ -11,8 +10,8 @@ export default function CategoryComponent() {
 
   const handlePress = (category) => {
     navigation.navigate('Category', {
-      categoryId: category.categoryId,   // bruges til at filtere i Firebase
-      categoryTitle: category.title,     // vises som overskrift i headeren
+      categoryId: category.categoryId,   
+      categoryTitle: category.title,    
     });
   };
 

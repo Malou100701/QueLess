@@ -1,4 +1,3 @@
-// style/category.styles.js
 import { StyleSheet } from 'react-native';
 import { colors, spacing } from './theme';
 
@@ -25,16 +24,21 @@ export default StyleSheet.create({
         backgroundColor: colors.surface,
     },
 
+    // billedet bliver sat til at fylde hele kortet
     image: {
         width: '100%',
         height: '100%',
     },
 
     overlay: {
+        // absoluteFillObject = shorthand for:
+        // position: 'absolute', top: 0, right: 0, bottom: 0, left: 0
+        // Det gør at overlayet fylder hele parent-containeren.
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.25)',
     },
 
+    //placerer titlen nederst på kortet og i midten 
     titleContainer: {
         position: 'absolute',
         left: 0,
