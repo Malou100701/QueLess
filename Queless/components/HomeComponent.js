@@ -1,29 +1,31 @@
-// HomeContent.js
-import React from 'react';
-import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { ScrollView, Text, View } from 'react-native';
 import styles from '../style/home.styles';
 import ImageSliderContent from './ImageSliderComponent';
 import CategoryComponent from './CategoryComponent';
 import AppHeader from './AppHeaderComponent';
+import { categories } from '../data/CategoryBundle';
 
 export default function HomeContent() {
-  const navigation = useNavigation();
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
-      <AppHeader title="Hjem"
+      <AppHeader 
+        title="Hjem"
         uppercase={true}
-        showLogout={true} />
+        showLogout={true} 
+      />
 
-      {/* Sektion: UDFORSK + image slider */}
       <View style={styles.sliderSection}>
         <Text style={styles.smallerTitles}>UDFORSK</Text>
-        <ImageSliderContent />
+
+        {/* ImageSliderContent er en separat komponent, som selv henter/indeholder data til billed-slideren. */}
+        <ImageSliderContent /> 
       </View>
 
-      <View style={{ marginTop: 32 }}>
+      <View>
         <Text style={styles.smallerTitles}>KATEGORIER</Text>
+
+        {/* CategoryComponent er en separat komponent, som selv henter/indeholder information om de forskellige kategorier, der skal vises. */}
         <CategoryComponent />
       </View>
 

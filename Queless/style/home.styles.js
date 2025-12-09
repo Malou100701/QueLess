@@ -1,26 +1,37 @@
-// Josephine Holst-Christensen
 import { StyleSheet } from 'react-native';
 import { spacing, colors } from './theme';
 
 export default StyleSheet.create({
+  // Hele siden
   page: {
     flex: 1,
-    backgroundColor: colors.background, // lyseblå, næsten hvid
+    backgroundColor: colors.background,
   },
+
+  // Indhold der får luft fra kanterne
   container: {
     flexGrow: 1,
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xl,
+    paddingTop: spacing.lg,
   },
-  title: { fontSize: 30, fontWeight: '700', marginBottom: spacing.md, color: colors.text },
 
-  body: { textAlign: 'center', color: colors.muted },
+  // Stor titel
+  title: {
+    fontSize: 30,
+    fontWeight: '700',
+    marginBottom: spacing.md,
+    color: colors.text,
+  },
 
+
+  // Sektion med image-slider
   sliderSection: {
-    width: '100%',
     marginTop: spacing.lg,
-    marginBottom: 30, 
+    marginBottom: spacing.xl,
   },
 
+  // Mindre sektionstitler
   smallerTitles: {
     fontSize: 20,
     fontWeight: '700',
@@ -28,11 +39,9 @@ export default StyleSheet.create({
     marginBottom: spacing.sm,
   },
 
-  logoutIcon: {
-  position: 'absolute',
-  top: 0,  
-  right: 20,
-  zIndex: 10,
-},
-
+  card: {
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: 12,   
+  },
 });
