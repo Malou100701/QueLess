@@ -1,5 +1,3 @@
-// components/AppHeaderComponent.js
-import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../style/header.styles';
@@ -13,18 +11,35 @@ export default function AppHeader({
   showLogout,
 }) {
   const navigation = useNavigation();
-  const titleText = uppercase ? title?.toUpperCase() : title;
-  const isUppercase = !!uppercase;
 
-   const handleLogout = () => {
-    navigation.getParent()?.navigate('Login') || navigation.navigate('Login');
+  const handleLogout = () => {
+    navigation.navigate('Login');
   };
-  
 
+  // Titel står til venstre, logout til højre, INGEN back-knap
+  if (uppercase) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titleUppercase}>
+          {title?.toUpperCase()}
+        </Text>
+
+        <View style={styles.side}>
+          {showLogout && (
+            <TouchableOpacity onPress={handleLogout}>
+              <Image source={LogoutIcon} style={styles.icon} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    );
+  }
+
+  // Back-icon til venstre, titel i midten, logout til højre
   return (
     <View style={styles.container}>
-      {/* venstre side – bredde 0 hvis der IKKE er back-knap */}
-      <View style={[styles.side, !showBack && { width: 0 }]}>
+      {/* Venstre side: back-knap */}
+      <View style={styles.side}>
         {showBack && (
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={BackIcon} style={styles.icon} />
@@ -32,24 +47,11 @@ export default function AppHeader({
         )}
       </View>
 
-      <View
-        style={[
-          styles.titleContainer,
-          isUppercase && styles.titleContainerLeft,
-        ]}
-      >
-        {!!titleText && (
-          <Text
-            style={isUppercase ? styles.titleUppercase : styles.title}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {titleText}
-          </Text>
-        )}
-      </View>
+      {/* Titel i midten */}
+      <Text style={styles.title}>{title}</Text>
 
-      <View style={styles.sideRight}>
+      {/* Højre side: logout */}
+      <View style={styles.side}>
         {showLogout && (
           <TouchableOpacity onPress={handleLogout}>
             <Image source={LogoutIcon} style={styles.icon} />
