@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+// components/BrandDetailComponent.js
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,123 +14,149 @@ import AppHeader from './AppHeaderComponent';
 import { localImagesByKey } from '../data/ImageBundle';
 import styles from '../style/branddetail.styles';
 import { rtdb, auth } from '../database/firebase';
-import {
-  ref,
-  onValue,
-  update,
-  push,
-  set,
-} from 'firebase/database';
-import { colors } from '../style/theme';
+import { ref, onValue, update, push, set } from 'firebase/database';
 import BrandMapComponent from './BrandMapComponent';
 
 export default function BrandDetailContent({ brandId }) {
+
+  // Brand-data
   const [brand, setBrand] = useState(null);
+
+  // Loader mens vi henter brand
   const [loading, setLoading] = useState(true);
+
+  // Bruges til at holde styr på hvilket lagersalg der er åbent/dropdown
   const [openSaleId, setOpenSaleId] = useState(null);
 
-  // 🆕 Brugeren har allerede booket?
-  const [hasBookedThisBrand, setHasBookedThisBrand] = useState(false);
+  // Bruges til hvilke lagersalg brugeren allerede har booket
+  const [bookedSaleIds, setBookedSaleIds] = useState({});
 
-  // 🆕 Alert ved tryk på disabled knap
-  const showDisabledAlert = () => {
+  // Viser en alert hvis bruger prøver at booke et lagersalg igen
+  function showAlreadyBookedAlert() {
     Alert.alert(
-      "Allerede booket",
-      "Du kan kun booke ét tidsrum pr. lagersalg."
+      'Allerede booket',
+      'Du kan kun booke ét tidsrum for dette lagersalg.'
     );
-  };
+  }
 
-  // --------------------------------------------------
-  // HENT BRAND DATA
-  // --------------------------------------------------
-  useEffect(() => {
-    const brandRef = ref(rtdb, `brands/${brandId}`);
+  //Henter brand-data (realtid)
+  useEffect(function () {
+    const brandRef = ref(rtdb, 'brands/' + brandId);
 
-    const unsub = onValue(
+    // onValue lytter til ændringer
+    const unsubscribe = onValue(
       brandRef,
-      snapshot => {
+      function (snapshot) {
         const data = snapshot.val();
-        setBrand(data || null);
+        if (data) {
+          setBrand(data);
+        } else {
+          setBrand(null);
+        }
         setLoading(false);
       },
-      error => {
-        console.log('Error loading brand:', error);
+      function (error) {
+        console.log('Fejl ved hentning af brand:', error);
         setBrand(null);
         setLoading(false);
       }
     );
 
-    return () => unsub();
+    // stopper med at lytte, når komponenten fjernes / når der åbnes op for en ny side
+    return unsubscribe;
   }, [brandId]);
 
-  // --------------------------------------------------
-  // TJEK BOOKING STATUS FOR DENNE BRUGER
-  // --------------------------------------------------
-  useEffect(() => {
+  // Kigger på brugerens bookinger og ser, hvilke lagersalg der allerede er booket
+  useEffect(function () {
     const currentUser = auth.currentUser;
     if (!currentUser) {
-      setHasBookedThisBrand(false);
+      setBookedSaleIds({});
       return;
     }
 
-    const bookingsRef = ref(rtdb, `myOutlets/${currentUser.uid}`);
+    const bookingsRef = ref(rtdb, 'myOutlets/' + currentUser.uid);
 
-    const unsubscribe = onValue(bookingsRef, snapshot => {
+    const unsubscribe = onValue(bookingsRef, function (snapshot) {
       const data = snapshot.val() || {};
-      const bookingsArray = Object.values(data);
 
-      const alreadyBooked = bookingsArray.some(
-        booking => booking.brandId === brandId
-      );
+      // Laver objekt om til liste af bookings
+      const bookingsArray = [];
+      const keys = Object.keys(data);
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        bookingsArray.push(data[key]);
+      }
 
-      setHasBookedThisBrand(alreadyBooked);
+      // Bygger et objekt med alle saleId, brugeren har booket
+      const saleIdMap = {};
+      for (let j = 0; j < bookingsArray.length; j++) {
+        const booking = bookingsArray[j];
+        if (booking.saleId) {
+          saleIdMap[booking.saleId] = true;
+        }
+      }
+
+      // Nu ved vi: bookedSaleIds[saleId] === true → så betyder det at dette lagersalg er allerede booket
+      setBookedSaleIds(saleIdMap);
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, [brandId]);
 
-  // --------------------------------------------------
-  // LAV LISTE AF LAGERSALG
-  // --------------------------------------------------
-  const salesList = useMemo(() => {
-    if (!brand || !brand.sales) return [];
-    return Object.entries(brand.sales).map(([id, sale]) => ({
-      id,
-      ...sale,
-    }));
-  }, [brand]);
+  //Laver en liste med lagersalg fra brand
+  function buildSalesList(brandData) {
+    const list = [];
 
-  const toggleSaleOpen = saleId => {
-    setOpenSaleId(prev => (prev === saleId ? null : saleId));
-  };
-
-  // --------------------------------------------------
-  // BOOKING
-  // --------------------------------------------------
-  const handleBookSlot = (sale, slot) => {
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
-      Alert.alert("Log ind", "Du skal være logget ind for at booke.");
-      return;
+    if (!brandData || !brandData.sales) {
+      return list;
     }
 
-    // 🆕 Check om brugeren allerede har booket
-    if (hasBookedThisBrand) {
-      Alert.alert("Allerede booket", "Du har allerede booket et tidsrum.");
+    const salesObject = brandData.sales;
+    const salesKeys = Object.keys(salesObject);
+
+    for (let i = 0; i < salesKeys.length; i++) {
+      const saleId = salesKeys[i];
+      const saleData = salesObject[saleId];
+      list.push({
+        id: saleId,
+        ...saleData,
+      });
+    }
+
+    return list;
+  }
+
+  const salesList = buildSalesList(brand);
+
+  // Skift om et lagersalg er åbent eller lukket (i dropdown)
+  function toggleSaleOpen(saleId) {
+    if (openSaleId === saleId) {
+      setOpenSaleId(null);
+    } else {
+      setOpenSaleId(saleId);
+    }
+  }
+
+  // Booking-logik for ét tidsrum (slot) i ét lagersalg 
+  function handleBookSlot(sale, slot) {
+    const currentUser = auth.currentUser;
+
+    // Må kun have én booking pr. lagersalg (sale)
+    if (bookedSaleIds[sale.id]) {
+      // hvis denne bruger allerede har en booking med dette sale.id så vises alert
+      showAlreadyBookedAlert();
       return;
     }
 
     const capacity = slot.capacity;
-    const bookedCount = slot.bookedCount || 0;
+    const bookedCount = slot.bookedCount ? slot.bookedCount : 0;
 
-    // Udsolgt?
+    //Tjekker om tidsrummet er udsolgt
     if (capacity != null && bookedCount >= capacity) {
-      Alert.alert("Udsolgt", "Dette tidsrum er udsolgt.");
+      Alert.alert('Udsolgt', 'Dette tidsrum er udsolgt.');
       return;
     }
 
-    // Firebase refs
     const slotRef = ref(
       rtdb,
       `brands/${brandId}/sales/${sale.id}/timeSlots/${slot.id}`
@@ -137,16 +164,17 @@ export default function BrandDetailContent({ brandId }) {
 
     const newBookedCount = bookedCount + 1;
 
-    // Opdater slot
+    //Først opdaterer vi bookedCount på slottet
     update(slotRef, { bookedCount: newBookedCount })
-      .then(() => {
-        const bookingsRef = ref(rtdb, `myOutlets/${currentUser.uid}`);
+      .then(function () {
+        //Derefter opretter vi booking under myOutlets/{userId}
+        const bookingsRef = ref(rtdb, 'myOutlets/' + currentUser.uid);
         const newBookingRef = push(bookingsRef);
 
         const bookingData = {
-          brandId,
+          brandId: brandId,
           brandTitle: brand.title,
-          saleId: sale.id,
+          saleId: sale.id,                
           saleDate: sale.date,
           saleLocation: sale.location || '',
           slotId: slot.id,
@@ -157,21 +185,19 @@ export default function BrandDetailContent({ brandId }) {
 
         return set(newBookingRef, bookingData);
       })
-      .then(() => {
-        Alert.alert("Booking bekræftet", "Din tid er nu booket.");
+      .then(function () {
+        Alert.alert('Booking bekræftet', 'Din tid er nu booket.');
       })
-      .catch(error => {
-        console.log("Booking fejl:", error);
-        Alert.alert("Fejl", "Der opstod en fejl. Prøv igen senere.");
+      .catch(function (error) {
+        console.log('Booking fejl:', error);
+        Alert.alert('Fejl', 'Der opstod en fejl. Prøv igen senere.');
       });
-  };
+  }
 
-  // --------------------------------------------------
-  // LOADING
-  // --------------------------------------------------
+  // Loading / fejlvisning
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center" }}>
+      <View style={styles.center}>
         <ActivityIndicator />
       </View>
     );
@@ -179,7 +205,7 @@ export default function BrandDetailContent({ brandId }) {
 
   if (!brand) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center" }}>
+      <View style={styles.center}>
         <Text>Kunne ikke finde brand.</Text>
       </View>
     );
@@ -189,7 +215,7 @@ export default function BrandDetailContent({ brandId }) {
 
   return (
     <ScrollView style={styles.page}>
-      <View style={styles.container}>
+      <View style={styles.headerContainer}>
         <AppHeader showBack={true} showLogout={true} />
       </View>
 
@@ -204,29 +230,40 @@ export default function BrandDetailContent({ brandId }) {
           <Text style={styles.description}>{brand.description}</Text>
         )}
 
-        {/* -------------------------------------------
-            LAGERSALG
-        -------------------------------------------- */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Kommende lagersalg</Text>
 
           {salesList.length === 0 && (
-            <Text style={styles.muted}>Der er ingen kommende lagersalg.</Text>
+            <Text style={styles.muted}>
+              Der er ingen kommende lagersalg.
+            </Text>
           )}
 
-          {salesList.map(sale => {
-            const timeSlots = sale.timeSlots
-              ? Object.entries(sale.timeSlots).map(([id, slot]) => ({
-                  id,
-                  ...slot,
-                }))
-              : [];
+          {salesList.map(function (sale) {
+            // Bygger liste af timeSlots (tidsrum) for dette lagersalg
+            let timeSlots = [];
+            if (sale.timeSlots) {
+              const slotKeys = Object.keys(sale.timeSlots);
+              for (let i = 0; i < slotKeys.length; i++) {
+                const slotId = slotKeys[i];
+                const slotData = sale.timeSlots[slotId];
+                timeSlots.push({
+                  id: slotId,
+                  ...slotData,
+                });
+              }
+            }
+
+            //Har brugeren allerede booket dette konkrete lagersalg?
+            const hasBookedThisSale = bookedSaleIds[sale.id] === true;
 
             return (
               <View key={sale.id} style={styles.saleCard}>
                 <TouchableOpacity
                   style={styles.saleHeader}
-                  onPress={() => toggleSaleOpen(sale.id)}
+                  onPress={function () {
+                    toggleSaleOpen(sale.id);
+                  }}
                 >
                   <View>
                     <Text style={styles.saleDate}>{sale.date}</Text>
@@ -235,28 +272,39 @@ export default function BrandDetailContent({ brandId }) {
                     )}
                   </View>
 
-                  <Text style={styles.saleChevron}>
-                    {openSaleId === sale.id ? "▲" : "▼"}
+                  <Text>
+                    {openSaleId === sale.id ? '▲' : '▼'}
                   </Text>
                 </TouchableOpacity>
 
+                {/* Hvis dette lagersalg er åbent → vis tidsrum */}
                 {openSaleId === sale.id && (
                   <View style={styles.slotList}>
-                    {timeSlots.map(slot => {
+                    {timeSlots.map(function (slot) {
                       const capacity = slot.capacity;
-                      const bookedCount = slot.bookedCount || 0;
+                      const bookedCount = slot.bookedCount
+                        ? slot.bookedCount
+                        : 0;
 
-                      const isSoldOut = capacity != null && bookedCount >= capacity;
-                      const disableForUser = hasBookedThisBrand;
+                      const isSoldOut =
+                        capacity != null && bookedCount >= capacity;
 
-                      const remaining =
-                        capacity != null ? Math.max(capacity - bookedCount, 0) : null;
+                      // Denne bruger må ikke booke flere tider for dette sale
+                      const disableForUser = hasBookedThisSale;
 
-                      // 👉 vælg style
+                      let remaining = null;
+                      if (capacity != null) {
+                        const diff = capacity - bookedCount;
+                        remaining = diff > 0 ? diff : 0;
+                      }
+
+                      // Vælg knap-style
                       let buttonStyle = styles.bookButton;
-
                       if (isSoldOut) {
-                        buttonStyle = [styles.bookButton, styles.bookButtonSoldOut];
+                        buttonStyle = [
+                          styles.bookButton,
+                          styles.bookButtonSoldOut,
+                        ];
                       } else if (disableForUser) {
                         buttonStyle = [
                           styles.bookButton,
@@ -266,7 +314,7 @@ export default function BrandDetailContent({ brandId }) {
 
                       return (
                         <View key={slot.id} style={styles.slotCard}>
-                          <View style={{ flex: 1 }}>
+                          <View style={styles.slotInfo}>
                             <Text style={styles.slotTime}>
                               {slot.start} - {slot.end}
                             </Text>
@@ -280,15 +328,20 @@ export default function BrandDetailContent({ brandId }) {
 
                           <TouchableOpacity
                             style={buttonStyle}
-                            activeOpacity={isSoldOut || disableForUser ? 1 : 0.7}
-                            onPress={() => {
+                            activeOpacity={
+                              isSoldOut || disableForUser ? 1 : 0.7
+                            }
+                            onPress={function () {
                               if (isSoldOut) {
-                                Alert.alert("Udsolgt", "Dette tidsrum er udsolgt.");
+                                Alert.alert(
+                                  'Udsolgt',
+                                  'Dette tidsrum er udsolgt.'
+                                );
                                 return;
                               }
 
                               if (disableForUser) {
-                                showDisabledAlert();
+                                showAlreadyBookedAlert();
                                 return;
                               }
 
@@ -296,7 +349,7 @@ export default function BrandDetailContent({ brandId }) {
                             }}
                           >
                             <Text style={styles.bookButtonText}>
-                              {isSoldOut ? "Udsolgt" : "Book"}
+                              {isSoldOut ? 'Udsolgt' : 'Book'}
                             </Text>
                           </TouchableOpacity>
                         </View>
@@ -309,6 +362,7 @@ export default function BrandDetailContent({ brandId }) {
           })}
         </View>
 
+        {/* Kort med brandets placering */}
         <BrandMapComponent
           latitude={brand.latitude}
           longitude={brand.longitude}
