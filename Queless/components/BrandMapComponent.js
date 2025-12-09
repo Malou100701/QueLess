@@ -4,10 +4,6 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import styles from '../style/brandmap.styles';
 
-//
-// Standard Haversine-implementering (som i mange eksempler online):
-// Beregner luftlinie-afstand i kilometer mellem to punkter på jorden
-//
 function calculateDistanceInKilometers(
   startLatitude,
   startLongitude,
@@ -42,21 +38,27 @@ export default function BrandMapComponent({
   title,
   address,
 }) {
+  // Brugerens nuværende position
   const [userLocation, setUserLocation] = useState(null);
+
+  // Om vi stadig henter lokation
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+
+  // Fejltekst hvis lokation ikke kan hentes
   const [locationErrorMessage, setLocationErrorMessage] = useState(null);
 
-  // Hvis brandet ikke har koordinater, giver det ingen mening at vise kortet
+  // Hvis brandet ikke har koordinater, viser vi ikke kortet
   if (latitude == null || longitude == null) return null;
 
-  // Hvis de kommer som strings, laver vi dem om til tal
+  // Sørg for at koordinaterne er tal
   const brandLatitude = parseFloat(latitude);
   const brandLongitude = parseFloat(longitude);
 
+  // Hent brugerens lokation, når komponenten vises
   useEffect(() => {
     async function fetchUserLocation() {
       try {
-        // Bed om tilladelse til lokation (Expo anbefaler dette mønster)
+        // Spørg om lov til at bruge lokation
         const { status } =
           await Location.requestForegroundPermissionsAsync();
 
@@ -83,7 +85,7 @@ export default function BrandMapComponent({
     fetchUserLocation();
   }, []);
 
-  // Kortet centreres omkring brandets placering
+  // Hvor kortet skal være centreret (brandets placering)
   const initialMapRegion = {
     latitude: brandLatitude,
     longitude: brandLongitude,
@@ -91,7 +93,7 @@ export default function BrandMapComponent({
     longitudeDelta: 0.01,
   };
 
-  // Tekst: "Ca. X km fra dig"
+  // Tekst som "Ca. 450 m fra dig" eller "Ca. 2.3 km fra dig"
   let distanceText = null;
 
   if (userLocation) {
@@ -116,9 +118,10 @@ export default function BrandMapComponent({
         <MapView
           style={styles.map}
           initialRegion={initialMapRegion}
-          showsUserLocation={true} // anbefalet i Expo/React Native Maps eksempler
+          // Viser blå prik for brugeren (hvis vi har lokation)
+          showsUserLocation={true}
         >
-          {/* Brandets placering */}
+          {/* Markør for brandets placering */}
           <Marker
             coordinate={{ latitude: brandLatitude, longitude: brandLongitude }}
             title={title}
@@ -126,29 +129,19 @@ export default function BrandMapComponent({
           />
         </MapView>
 
-        {/* Loader mens vi henter brugerens placering */}
+        {/* Loader mens vi finder brugerens position */}
         {isLoadingLocation && (
-          <View
-            style={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              borderRadius: 12,
-              paddingHorizontal: 8,
-              paddingVertical: 4,
-            }}
-          >
+          <View style={styles.locationLoader}>
             <ActivityIndicator size="small" />
           </View>
         )}
       </View>
 
-      {/* Info under kortet */}
+      {/* Tekst under kortet */}
       <View style={styles.infoContainer}>
-        {title && <Text style={styles.infoTitle}>{title}</Text>}
         {address && <Text style={styles.infoAddress}>{address}</Text>}
 
+        {/* Vis enten afstand eller fejlbesked */}
         {distanceText && !locationErrorMessage && (
           <Text style={styles.infoDistance}>{distanceText}</Text>
         )}
