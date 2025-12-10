@@ -37,7 +37,7 @@ export default function FavoritesContent() {
     return () => unsubscribe();
   }, []);
 
-  
+
   // Henter ALLE favoritter for den aktuelle bruger
   // fra "favorites/{userId}"
   useEffect(() => {

@@ -76,6 +76,20 @@ export default StyleSheet.create({
   cancelButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.error || '#b00020',
+    color: '#b00020',
+  },
+
+    ticketButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    borderRadius: 999,
+    backgroundColor: '#f4f1f1ff',
+  },
+
+  ticketButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6b6667ff',
   },
 });

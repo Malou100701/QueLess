@@ -11,10 +11,14 @@ import { ref, onValue, get, update, remove } from 'firebase/database';
 import { auth, rtdb } from '../database/firebase';
 import AppHeader from './AppHeaderComponent';
 import styles from '../style/myoutlets.styles';
+import { useNavigation } from '@react-navigation/native';   // 🔹 tilføjet
 
 export default function MyOutletsContent() {
   // Liste med bookinger for den nuværende bruger
   const [bookings, setBookings] = useState([]);
+
+  // navigation-objekt til at gå til "Vis billet"-siden
+  const navigation = useNavigation();   
 
   // Henter alle bookinger for den bruger som er logget ind
   useEffect(function () {
@@ -66,17 +70,16 @@ export default function MyOutletsContent() {
   // Annuller en booking:
   // først så opdateres bookedCount i timeslottet,
   // så slettes billetten under myOutlets/{userId}/{bookingId}
-  // --------------------------------------------------
   async function cancelBookingInDatabase(userId, booking) {
     // Reference til timeslottet for denne booking
     const slotRef = ref(
       rtdb,
       'brands/' +
-      booking.brandId +
-      '/sales/' +
-      booking.saleId +
-      '/timeSlots/' +
-      booking.slotId
+        booking.brandId +
+        '/sales/' +
+        booking.saleId +
+        '/timeSlots/' +
+        booking.slotId
     );
 
     // Henter nuværende bookedCount
@@ -88,7 +91,7 @@ export default function MyOutletsContent() {
     // Opdater bookedCount
     await update(slotRef, { bookedCount: newBooked });
 
-    //Sletter billetten under myOutlets
+    // Sletter billetten under myOutlets
     const bookingRef = ref(
       rtdb,
       'myOutlets/' + userId + '/' + booking.id
@@ -125,6 +128,14 @@ export default function MyOutletsContent() {
         },
       ]
     );
+  }
+
+  // Når vi trykker "Vis billet" på en booking
+  function handleShowTicket(booking) {
+    // Vi sender hele booking-objektet med til den nye side
+    navigation.navigate('TicketDetail', {
+      booking: booking,
+    });
   }
 
   return (
@@ -167,6 +178,19 @@ export default function MyOutletsContent() {
             ) : null}
 
             <View style={styles.buttonRow}>
+              {/* Knap til at gå til "Vis billet"-siden */}
+              <TouchableOpacity
+                style={styles.ticketButton}
+                onPress={function () {
+                  handleShowTicket(booking);
+                }}
+              >
+                <Text style={styles.ticketButtonText}>
+                  Vis billet
+                </Text>
+              </TouchableOpacity>
+
+              {/* Knap til at annullere booking */}
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={function () {
@@ -178,6 +202,7 @@ export default function MyOutletsContent() {
                 </Text>
               </TouchableOpacity>
             </View>
+
           </View>
         );
       })}
