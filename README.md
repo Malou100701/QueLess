@@ -1,4 +1,4 @@
-# QueLess
+<img width="585" height="1266" alt="IMG_1957" src="https://github.com/user-attachments/assets/2a51495e-9004-43fa-b90e-64868480da27" /><img width="585" height="1266" alt="IMG_1958" src="https://github.com/user-attachments/assets/c6a3b118-bc62-49ef-8b9f-22c8ddbf714c" /># QueLess
 **Queless**
 
 Queless er en app, der skal revolutionere oplevelsen af lagersalg. Traditionelt er lagersalg forbundet med lange køer, kaotiske forhold og risikoen for at gå glip af de bedste varer. Queless løser dette ved at give kunder mulighed for at booke adgang i tidsbestemte slots.
@@ -20,5 +20,6 @@ Med Queless vil vi skabe en ny standard for lagersalg – en oplevelse præget a
 
 https://www.loom.com/share/213966052c1048178dc4b3a42207ec2c
 
+<img width="585" height="1266" alt="IMG_1957" src="https://github.com/user-attachments/assets/76904ed2-14e6-4239-9186-507bdde68729" />
 
-
+<img width="585" height="1266" alt="IMG_1958" src="https://github.com/user-attachments/assets/c37ca3d8-12cf-4bb8-b7df-4a6e7674a9db" />
