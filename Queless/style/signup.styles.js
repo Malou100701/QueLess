@@ -1,11 +1,10 @@
-// Malou Bjørnholt
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
     bg: { flex: 1 },                        // bruges på <ImageBackground>
     container: {
         flex: 1,
-        justifyContent: 'flex-start',// ← læg indholdet øverst
+        justifyContent: 'flex-start',// lægger indholdet øverst
         paddingTop: 150,
     },
 

@@ -1,4 +1,3 @@
-//Malou Bjørnholt
 import { useState } from 'react';
 import {
     Text, View, TextInput, KeyboardAvoidingView, Button, Platform, ImageBackground, Alert, Pressable,

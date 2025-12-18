@@ -1,5 +1,4 @@
-// components/BrandDetailComponent.js
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,

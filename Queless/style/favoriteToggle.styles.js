@@ -1,4 +1,3 @@
-// style/favoriteToggle.styles.js
 import { StyleSheet } from 'react-native';
 import { spacing } from './theme'; // henter dine globale afstande
 

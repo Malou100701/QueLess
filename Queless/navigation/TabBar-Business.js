@@ -1,8 +1,7 @@
-// Josephine Holst-Christensen
 // navigation/NavigationBar.js
 import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colors, headerStyling } from '../style/theme';
+import { colors } from '../style/theme';
 
 // Skærme
 import Home from '../screens/Home';            

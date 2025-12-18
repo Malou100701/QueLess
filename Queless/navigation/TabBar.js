@@ -1,5 +1,3 @@
-// navigation/TabBar.js
-import React from 'react';
 import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,7 +6,6 @@ import { colors } from '../style/theme';
 // Skærme
 import Home from '../screens/Home';
 import Category from '../screens/SpecificCategory';
-import CheckIn from '../screens/CheckIn';
 import Favorites from '../screens/Favorites';
 import Friends from '../screens/Friends';
 import MyOutlets from '../screens/MyOutlets';
@@ -20,7 +17,6 @@ import HomeIcon from '../assets/icons/Home.png';
 import HeartIcon from '../assets/icons/heart.png';
 import FriendsIcon from '../assets/icons/friends.png';
 import CalendarIcon from '../assets/icons/calendar.png';
-import QRIcon from '../assets/icons/QRcode.png';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,7 +24,6 @@ const Stack = createNativeStackNavigator();
 const TAB_ICONS = {
   Hjem: HomeIcon,
   Favoritter: HeartIcon,
-  'Tjek ind': QRIcon,
   Venner: FriendsIcon,
   'Mine tider': CalendarIcon,
 };
@@ -87,7 +82,6 @@ export default function NavigationBar() {
     >
       <Tab.Screen name="Hjem" component={HomeStackScreen} />
       <Tab.Screen name="Favoritter" component={FavoritesStackScreen} />
-      <Tab.Screen name="Tjek ind" component={CheckIn} />
       <Tab.Screen name="Venner" component={Friends} />
       <Tab.Screen name="Mine tider" component={MyOutletsStackScreen} />
     </Tab.Navigator>

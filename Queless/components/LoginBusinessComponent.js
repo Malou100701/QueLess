@@ -1,4 +1,3 @@
-// Josephine Holst-Christensen
 import {
   Text,
   View,
