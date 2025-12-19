@@ -1,5 +1,5 @@
-import QRscannerComponent from '../components/QRscannerComponent';
+import QRcodeComponent from '../components/QRcodeComponent';
 
-export default function QRscanner() {
-  return <QRscannerComponent/>;
+export default function QRcode() {
+  return <QRcodeComponent/>;
 }

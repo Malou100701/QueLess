@@ -1,3 +1,4 @@
+//Denne side bruges til at definere kategorierne i appen
 export const categories = [
   {
     id: 'skønhed',

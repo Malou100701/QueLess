@@ -1,3 +1,4 @@
+//Denne side bruges til samle alle lokale billeder i appen ét sted, og så eksportere dem som et objekt der kan bruges andre steder i appen
 export const localImagesByKey = {
   planetNusa: require('../assets/images/Planet-Nusa.jpg'),
   ecooking: require('../assets/images/ecooking.jpg'),

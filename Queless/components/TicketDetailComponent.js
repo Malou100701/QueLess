@@ -1,7 +1,7 @@
 import { View, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import AppHeader from './AppHeaderComponent';
-import QRscannerComponent from './QRscannerComponent';
+import QRcodeComponent from './QRcodeComponent';
 import styles from '../style/ticketdetail.styles';
 
 export default function TicketDetailComponent() {
@@ -19,7 +19,7 @@ export default function TicketDetailComponent() {
 
       <View style={styles.qrWrapper}>
         <View style={styles.card}>
-          <QRscannerComponent booking={booking} />
+          <QRcodeComponent booking={booking} />
         </View>
       </View>
     </ScrollView>

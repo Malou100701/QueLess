@@ -79,13 +79,10 @@ export default function SignupComponent({ onSuccess }) {
                         <Text style={styles.SignUpLinkText}>Har allerede en konto? Tryk her!</Text>
                     </Pressable>
 
-                    <Pressable
-                        onPress={() => navigation.navigate('LoginBusiness')}
-                        accessibilityRole="link"
-                        style={styles.footerLink}
-                    >
-                        <Text style={styles.SignUpLinkText}>Er du en virksomhed? Tryk her!</Text>
-                    </Pressable>
+                    <Text style={[styles.SignUpLinkText, styles.footerLink]}>
+                        Er du en virksomhed? Tryk her!
+                    </Text>
+
 
                 </View>
             </KeyboardAvoidingView>

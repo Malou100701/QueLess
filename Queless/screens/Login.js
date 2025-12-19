@@ -1,5 +1,5 @@
 import * as React from 'react';
-import LoginForm from '../components/login';
+import LoginForm from '../components/LoginComponents';
 
 export default function Login({ navigation }) {
   const [name, setName] = React.useState('');

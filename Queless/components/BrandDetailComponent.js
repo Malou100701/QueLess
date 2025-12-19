@@ -1,3 +1,7 @@
+/* Denne fil bruges til at vise detaljer om et brand og dets kommende lagersalg.
+ Brugeren kan se information, åbne lagersalg og booke et tidsrum.
+ Siden sørger for, at man ikke kan booke det samme lagersalg flere gange.
+ */
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -17,16 +21,17 @@ import { ref, onValue, update, push, set } from 'firebase/database';
 import BrandMapComponent from './BrandMapComponent';
 
 export default function BrandDetailContent({ brandId }) {
-  // Brand-data
+  // Gemmer information om brandet, så vi kan vise det på siden og opdatere det, når data ændrer sig
   const [brand, setBrand] = useState(null);
 
-  // Loader mens vi henter brand
+  // Bruges til at vise en loader, så brugeren kan se at siden er i gang med at hente data
   const [loading, setLoading] = useState(true);
 
-  //bruges til at åbne/lukke lagersalg/ altså med dropdown
+  //bruges til at åbne/lukke lagersalg/ altså med dropdown i UI
   const [openSaleId, setOpenSaleId] = useState(null);
 
-  // Alle bookinger for den nuværende bruger (liste)
+  // Her gemmer vi alle tider som brugeren allerede har booket,
+  // så vi kan stoppe dem fra at booke den samme igen.
   const [userBookings, setUserBookings] = useState([]);
 
   // Alert hvis brugeren prøver at booke samme lagersalg igen
@@ -37,21 +42,26 @@ export default function BrandDetailContent({ brandId }) {
     );
   }
 
-  // Henter brand-data (realtid) fra "brands/{brandId}"
+  // Når siden åbner (eller brandId ændrer sig),
+  // så henter vi brandets information fra databasen.
   useEffect(function () {
     const brandRef = ref(rtdb, 'brands/' + brandId);
 
+    // Vi “lytter” på brandet, så hvis data ændrer sig i databasen,
+    // så opdaterer siden sig automatisk.
     const unsubscribe = onValue(
       brandRef,
       function (snapshot) {
         const data = snapshot.val();
 
+        // Gemmer data i brand-variablen (så vi kan vise det)
         if (data) {
           setBrand(data);
         } else {
           setBrand(null);
         }
 
+        // Nu er vi færdige med at vente på data
         setLoading(false);
       },
       function (error) {
@@ -61,10 +71,12 @@ export default function BrandDetailContent({ brandId }) {
       }
     );
 
+    // Når man forlader siden, stopper vi med at lytte på databasen
     return unsubscribe;
   }, [brandId]);
 
-  // Henter alle bookinger for nuværende bruger
+  // Når siden åbner, henter vi også brugerens bookinger.
+  // Det gør vi for at kunne tjekke “har brugeren allerede booket?”
   useEffect(function () {
     const currentUser = auth.currentUser;
 
@@ -75,11 +87,16 @@ export default function BrandDetailContent({ brandId }) {
 
     const bookingsRef = ref(rtdb, 'myOutlets/' + currentUser.uid);
 
+    // Vi “lytter” til brugerens bookinger i databasen.
+    // Det betyder: hvis brugeren booker noget (eller sletter noget) så opdaterer siden sig selv automatisk.
     const unsubscribe = onValue(
       bookingsRef,
       function (snapshot) {
+        // snapshot = et øjebliksbillede af data lige nu
+        // .val() = selve indholdet (brandets info)
         const data = snapshot.val() || {};
 
+        // Laver objektet om til en liste med id + data (lettest at arbejde med i React)
         const list = [];
         const keys = Object.keys(data);
         for (let i = 0; i < keys.length; i++) {
@@ -100,10 +117,11 @@ export default function BrandDetailContent({ brandId }) {
       }
     );
 
+    // Stop lytningen når man forlader siden
     return unsubscribe;
   }, [brandId]);
 
-  // Laver liste med lagersalg fra brand
+  // Lagersalg i databasen ligger som et objekt, men vi vil have en liste for at kunne .map() over den.
   function buildSalesList(brandData) {
     const list = [];
 
@@ -127,9 +145,10 @@ export default function BrandDetailContent({ brandId }) {
     return list;
   }
 
+  // Liste over kommende lagersalg vi viser i UI
   const salesList = buildSalesList(brand);
 
-  // Åbn/luk et lagersalg i UI
+  // Åbn/luk i forhold til toggle/dropdown for et lagersalg i UI
   function toggleSaleOpen(saleId) {
     if (openSaleId === saleId) {
       setOpenSaleId(null);
@@ -138,8 +157,9 @@ export default function BrandDetailContent({ brandId }) {
     }
   }
 
-  // Tjek: har brugeren allerede en booking for dette brand + denne sale?
+  // Tjek: har brugeren allerede en booking for dette brand + dette lagersalg?
   function userHasBookingForSale(saleId) {
+    // Ser om der findes en booking som matcher både dette brand og dette sale
     for (let i = 0; i < userBookings.length; i++) {
       const booking = userBookings[i];
 
@@ -151,48 +171,64 @@ export default function BrandDetailContent({ brandId }) {
     return false;
   }
 
-  // Booking-logik for ét tidsrum (slot) i ét lagersalg
+  // Når brugeren trykker "Book" på et bestemt tidspunkt
   function handleBookSlot(sale, slot) {
-    const currentUser = auth.currentUser;
+    const currentUser = auth.currentUser;  // Finder den bruger der er logget ind lige nu
 
-    // Brugeren skal være logget ind
+
+    // (1) Brugeren skal være logget ind
     if (!currentUser) {
       Alert.alert('Log ind', 'Du skal være logget ind for at booke.');
       return;
     }
 
-    // Må kun have én booking pr. lagersalg for dette brand
+    // 2) Vi tjekker om brugeren allerede har booket dette lagersalg før
+    // (vi vil ikke tillade at booke flere tider til samme lagersalg)
     if (userHasBookingForSale(sale.id)) {
       showAlreadyBookedAlert();
       return;
     }
 
+
+    // 3) Nu tjekker vi om der stadig er plads på dette tidspunkt
+    // capacity = hvor mange der max må booke denne tid
+    // bookedCount = hvor mange der allerede har booket
     const capacity = slot.capacity;
     const bookedCount = slot.bookedCount ? slot.bookedCount : 0;
 
-    // Tjek om tidsrummet er udsolgt
+    // Hvis bookedCount er lig med (eller større end) capacity, så er det udsolgt
     if (capacity != null && bookedCount >= capacity) {
       Alert.alert('Udsolgt', 'Dette tidsrum er udsolgt.');
       return;
     }
 
+    // 4) Her laver vi en “adresse” til præcis dette tidspunkt i databasen.
+    // Det er ligesom en sti til den rigtige mappe i et filsystem:
+    // brands -> brandId -> sales -> saleId -> timeSlots -> slotId
+    // Vi skal bruge den adresse, fordi vi vil opdatere bookedCount derinde.
     const slotRef = ref(
       rtdb,
       'brands/' +
-        brandId +
-        '/sales/' +
-        sale.id +
-        '/timeSlots/' +
-        slot.id
+      brandId +
+      '/sales/' +
+      sale.id +
+      '/timeSlots/' +
+      slot.id
     );
 
+
+    // 5) Vi regner ud hvad bookedCount skal være efter bookingen
+    // (vi lægger 1 til, fordi der er én ny booking)
     const newBookedCount = bookedCount + 1;
 
-    //Opdaterer bookedCount på selve timeslottet
+    // Vi gør to ting ved en booking:
+    // A) Opdater bookedCount på slottet (så vi kan se hvor fyldt det er)
+    // B) Gem en booking under brugeren (så vi kan se hvad brugeren har booket)
     update(slotRef, { bookedCount: newBookedCount })
       .then(function () {
-        //Opretter booking under myOutlets/{userId}
+        // B) Gem booking under myOutlets/{userId}
         const bookingsRef = ref(rtdb, 'myOutlets/' + currentUser.uid);
+        // push() laver et nyt unikt booking-id automatisk
         const newBookingRef = push(bookingsRef);
 
         const bookingData = {
@@ -207,6 +243,7 @@ export default function BrandDetailContent({ brandId }) {
           createdAt: Date.now(),
         };
 
+        // set() gemmer bookingData på det nye id
         return set(newBookingRef, bookingData);
       })
       .then(function () {

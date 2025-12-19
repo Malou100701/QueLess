@@ -15,13 +15,12 @@ import AppHeader from './AppHeaderComponent';
 import FavoriteToggleComponent from './FavoriteToggleComponent';
 
 export default function FavoritesContent() {
-  const [brands, setBrands] = useState([]);          // alle brands fra "brands"
-  const [favoriteIds, setFavoriteIds] = useState({}); 
+  const [brands, setBrands] = useState([]); // alle brands
+  const [favoriteIds, setFavoriteIds] = useState({}); // { brandId: true, ... }
 
   const navigation = useNavigation();
 
- 
-  // Henter alle brands fra databasen (node: "brands")
+  // Henter alle brands (live)
   useEffect(() => {
     const brandsRef = ref(rtdb, 'brands');
 
@@ -34,12 +33,10 @@ export default function FavoritesContent() {
       setBrands(list);
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
-
-  // Henter ALLE favoritter for den aktuelle bruger
-  // fra "favorites/{userId}"
+  // Henter brugerens favoritter (live)
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -47,17 +44,18 @@ export default function FavoritesContent() {
       return;
     }
 
-    // Her læser vi hele "mappen" med brugerens favoritter:
     const userFavoritesRef = ref(rtdb, `favorites/${user.uid}`);
 
-    onValue(userFavoritesRef, snapshot => {
+    const unsubscribe = onValue(userFavoritesRef, snapshot => {
       const data = snapshot.val() || {};
       setFavoriteIds(data);
     });
+
+    return unsubscribe;
   }, []);
 
-  
-const toggleFavorite = (brandId) => {
+  // simpelt toggle (lad onValue opdatere state for os)
+  const toggleFavorite = (brandId) => {
     const user = auth.currentUser;
     if (!user) {
       console.log('Ingen bruger logget ind – kan ikke ændre favoritter.');
@@ -66,41 +64,24 @@ const toggleFavorite = (brandId) => {
 
     const favoriteRef = ref(rtdb, `favorites/${user.uid}/${brandId}`);
 
-    // Opdater både Firebase og lokal state
-    setFavoriteIds(prev => {
-      const updated = { ...prev };
-
-      if (updated[brandId]) {
-        // Hvis det allerede er favorit → fjern
-        remove(favoriteRef);
-        delete updated[brandId];
-      } else {
-        // Hvis det ikke er favorit → tilføj
-        set(favoriteRef, true);
-        updated[brandId] = true;
-      }
-
-      return updated;
-    });
+    // Hvis den allerede findes → fjern
+    // Ellers → tilføj
+    if (favoriteIds[brandId]) {
+      remove(favoriteRef);
+    } else {
+      set(favoriteRef, true);
+    }
   };
 
-
-  // Kun brands, som ligger i favorit-listen
+  // Kun brands som er favoritter
   const favoriteBrands = brands.filter(brand => !!favoriteIds[brand.id]);
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
-      <AppHeader
-        title="favoritter"
-        uppercase={true}
-        showLogout={true}
-      />
+      <AppHeader title="favoritter" uppercase={true} showLogout={true} />
 
-      {/* Hvis der ingen favoritter er */}
       {favoriteBrands.length === 0 && (
-        <Text style={styles.emptyText}>
-          Du har ingen favoritter endnu.
-        </Text>
+        <Text style={styles.emptyText}>Du har ingen favoritter endnu.</Text>
       )}
 
       <View style={styles.listContainer}>
@@ -121,11 +102,7 @@ const toggleFavorite = (brandId) => {
                 })
               }
             >
-              <Image
-                source={imageSource}
-                style={styles.image}
-                resizeMode="cover"
-              />
+              <Image source={imageSource} style={styles.image} resizeMode="cover" />
               <View style={styles.overlay} />
 
               <FavoriteToggleComponent

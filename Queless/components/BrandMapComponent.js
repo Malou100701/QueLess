@@ -4,7 +4,11 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import styles from '../style/brandmap.styles';
 
-// Beregner afstand i km mellem to koordinater
+/*
+ Viser et kort med brandets placering og (hvis du giver lov) din afstand til brandet.
+ */
+
+// Regner afstanden i km mellem to koordinater med Haversine-formlen.
 function calculateDistanceInKilometers(
   startLatitude,
   startLongitude,
@@ -39,10 +43,10 @@ export default function BrandMapComponent({
   title,
   address,
 }) {
-  // Brugerens nuværende position
+  // Gemmer din lokation (hvis vi får lov)
   const [userLocation, setUserLocation] = useState(null);
 
-  // Om vi stadig henter lokation
+  // Viser loader mens vi prøver at hente din lokation
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
 
   // Fejltekst hvis lokation ikke kan hentes
